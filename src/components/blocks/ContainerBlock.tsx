@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, DimensionValue } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle, DimensionValue } from 'react-native';
 import { ContainerProps, BlockNode } from '@/types';
 
 interface ContainerBlockProps {
@@ -26,17 +26,23 @@ export const ContainerBlock: React.FC<ContainerBlockProps> = ({
     borderStyle: 'dashed',
   };
 
+  const handlePress = (event: any) => {
+    event.stopPropagation();
+    onSelect();
+  };
+
   return (
-    <View
+    <TouchableOpacity
       style={[styles.container, containerStyle]}
-      onTouchEnd={onSelect}
+      onPress={handlePress}
+      activeOpacity={0.8}
     >
       {node.children?.map((child) => (
         <View key={child.id} style={styles.childWrapper}>
           {renderBlock(child)}
         </View>
       ))}
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -28,8 +28,13 @@ export const ImageBlock: React.FC<ImageBlockProps> = ({
     aspectRatio: props.height === 'auto' ? 16 / 9 : undefined,
   };
 
+  const handlePress = (event: any) => {
+    event.stopPropagation();
+    onSelect();
+  };
+
   return (
-    <TouchableOpacity onPress={onSelect} activeOpacity={0.8}>
+    <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
       <View style={[styles.container, containerStyle]}>
         <Image
           source={{ uri: props.src }}

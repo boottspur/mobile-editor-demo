@@ -248,19 +248,24 @@ export const MobileEmailEditor: React.FC = () => {
         <ScrollView
           style={styles.canvas}
           contentContainerStyle={styles.canvasContent}
-          onTouchStart={() => setSelectedBlockId(null)}
         >
-          {currentDocument.content.map((block) => (
-            <View key={block.id} style={styles.blockWrapper}>
-              {renderBlock(block)}
-            </View>
-          ))}
-          
-          {currentDocument.content.length === 0 && (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>Tap + to add your first block</Text>
-            </View>
-          )}
+          <TouchableOpacity 
+            style={styles.canvasBackground}
+            onPress={() => setSelectedBlockId(null)}
+            activeOpacity={1}
+          >
+            {currentDocument.content.map((block) => (
+              <View key={block.id} style={styles.blockWrapper}>
+                {renderBlock(block)}
+              </View>
+            ))}
+            
+            {currentDocument.content.length === 0 && (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>Tap + to add your first block</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </ScrollView>
 
         <View style={styles.toolbar}>
@@ -340,6 +345,10 @@ const styles = StyleSheet.create({
   canvasContent: {
     padding: 20,
     paddingBottom: 100,
+  },
+  canvasBackground: {
+    flex: 1,
+    minHeight: '100%',
   },
   blockWrapper: {
     marginBottom: 15,

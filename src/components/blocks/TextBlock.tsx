@@ -24,6 +24,11 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   const [tempContent, setTempContent] = useState(node.props.content);
   const props = node.props;
 
+  // Sync tempContent when node.props.content changes
+  React.useEffect(() => {
+    setTempContent(node.props.content);
+  }, [node.props.content]);
+
   const textStyle: TextStyle = {
     fontSize: props.fontSize || 16,
     color: props.color || '#333333',
@@ -56,7 +61,10 @@ export const TextBlock: React.FC<TextBlockProps> = ({
     );
   }
 
-  const handlePress = () => {
+  const handlePress = (event: any) => {
+    // Prevent parent ScrollView from deselecting this block
+    event.stopPropagation();
+    
     if (isSelected) {
       // If already selected, start editing
       onStartEdit();
@@ -66,10 +74,15 @@ export const TextBlock: React.FC<TextBlockProps> = ({
     }
   };
 
+  const handleLongPress = (event: any) => {
+    event.stopPropagation();
+    onStartEdit();
+  };
+
   return (
     <TouchableOpacity 
       onPress={handlePress} 
-      onLongPress={onStartEdit}
+      onLongPress={handleLongPress}
       activeOpacity={0.8}
     >
       <Text style={textStyle}>
