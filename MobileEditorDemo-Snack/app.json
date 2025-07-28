@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Mobile Email Editor Demo",
+    "slug": "mobile-email-editor-demo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "mobileemail",
+    "platforms": ["ios", "android", "web"],
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {},
+    "web": {}
+  }
+}

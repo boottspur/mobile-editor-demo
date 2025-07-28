@@ -1,10 +1,10 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppContextProvider } from '@/contexts/AppContext';
-import { DeepLinkProvider } from '@/contexts/DeepLinkContext';
-import { AppShell } from '@/components/AppShell';
 import { View, Text } from 'react-native';
+import { AppContextProvider } from './contexts/AppContext';
+import { DeepLinkProvider } from './contexts/DeepLinkContext';
+import { AppShell } from './components/AppShell';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },

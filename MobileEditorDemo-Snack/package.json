@@ -1,0 +1,17 @@
+{
+  "name": "mobile-email-editor-snack",
+  "version": "1.0.0",
+  "main": "App.tsx",
+  "dependencies": {
+    "expo": "~53.0.0",
+    "expo-status-bar": "~2.2.3",
+    "react": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-safe-area-context": "5.4.0",
+    "expo-file-system": "~18.1.11",
+    "expo-linking": "~7.1.7",
+    "expo-web-browser": "~14.2.0",
+    "react-native-reanimated": "^4.0.1",
+    "react-native-gesture-handler": "^2.27.2"
+  }
+}
