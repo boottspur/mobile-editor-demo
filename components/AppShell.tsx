@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../contexts/AppContext';
 import { DesktopPlaceholder } from './DesktopPlaceholder';
 import { MobileEmailEditor } from './MobileEmailEditor';
@@ -15,11 +16,17 @@ export const AppShell: React.FC = () => {
 
   // Show mobile email editor for mobile web and native contexts
   if (isMobileWeb || isNative) {
+    // Use SafeAreaView for native, regular View for mobile web
+    const Container = isNative ? SafeAreaView : View;
+    const containerStyle = isNative 
+      ? [styles.container, styles.nativeContainer] 
+      : styles.container;
+    
     return (
-      <View style={styles.container}>
+      <Container style={containerStyle} edges={isNative ? ['top', 'bottom'] : undefined}>
         <MobileEmailEditor />
         {isMobileWeb && <NativeAppBanner />}
-      </View>
+      </Container>
     );
   }
 
@@ -36,6 +43,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  nativeContainer: {
+    // Additional styles for native context if needed
   },
   loadingContainer: {
     flex: 1,

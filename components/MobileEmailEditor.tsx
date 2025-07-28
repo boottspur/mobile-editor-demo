@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmailDocument, BlockNode } from '../types';
 import { documentStorage } from '../utils/documentStorage';
 import { useDeepLink } from '../contexts/DeepLinkContext';
@@ -225,11 +224,10 @@ export const MobileEmailEditor: React.FC = () => {
   const selectedBlock = currentDocument.content.find(b => b.id === selectedBlockId);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Text style={styles.backButtonText}>← Back</Text>
@@ -286,8 +284,7 @@ export const MobileEmailEditor: React.FC = () => {
             onClose={() => setSelectedBlockId(null)}
           />
         )}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
