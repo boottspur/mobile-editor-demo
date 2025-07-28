@@ -1,99 +1,57 @@
 # Mobile Email Editor Demo
 
-A cross-platform mobile email editor demo built with React Native and Expo, showcasing how a single codebase can deliver optimal experiences across desktop web, mobile web, and native mobile contexts.
+A cross-platform mobile email editor that demonstrates single codebase serving desktop web, mobile web, and native mobile contexts with real-time cross-device synchronization.
 
-## 🌐 Live Demo
+## Quick Setup
 
-- **Web Demo**: https://mobile-editor-demo.vercel.app/
-- **Native Demo**: `exp://u.expo.dev/e82ab0ce-e88c-43ed-8e7b-694ddf55336a`
+1. **Set up Supabase** (required for cross-device sync): Follow `SUPABASE_SETUP.md`
+2. **Deploy to Snack**: Upload all files to https://snack.expo.dev/
+3. **Update deep link URL**: In `components/NativeAppBanner.tsx`, replace placeholder with your Snack URL
 
-## 🎯 Demo Flow
+## Key Changes for Snack Compatibility
 
-### Desktop Experience (width ≥ 1024px)
-Visit the web demo on a desktop browser to see a professional placeholder page explaining the mobile-first approach.
+- **Flattened directory structure**: Removed `src/` folder, moved all files to root level
+- **Fixed import paths**: Changed all `@/` aliases to relative paths (`../`, `./`)
+- **JSON to JS conversion**: Converted all `.json` documents to `.js` exports
+- **Removed path aliases**: Updated tsconfig.json to remove path mapping
 
-### Mobile Web Experience  
-Visit the same URL on a mobile device or browser dev tools mobile mode to access the full WYSIWYG email editor with a native app transition banner.
+## Files Structure
 
-### Native Experience
-Scan the QR code from your EAS dashboard or use the native demo URL above in Expo Go to experience the full editor without the banner.
-
-## ✨ Key Features
-
-- **Context Detection**: Smart routing between desktop/mobile-web/native experiences
-- **WYSIWYG Editor**: Touch-optimized email builder with Container, Text, and Image blocks
-- **Document Management**: Cross-platform storage with pre-seeded demo documents
-- **Deep Linking**: Seamless handoffs between web and native with document state preservation
-- **Single Codebase**: Same React Native components work across all platforms
-
-## 🛠 Development
-
-### Prerequisites
-- Node.js 18+
-- Expo CLI
-- EAS CLI (for publishing)
-
-### Getting Started
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npx expo start
-
-# Run on web
-npx expo start --web
-
-# Build for web
-npx expo export --platform web
+```
+/
+├── components/          # React components
+│   ├── blocks/         # Editor block components
+│   ├── AppShell.tsx    # Main app shell with context routing
+│   ├── MobileEmailEditor.tsx  # Core email editor
+│   └── ...
+├── contexts/           # React contexts
+├── utils/             # Utility functions
+├── types.ts           # TypeScript types
+├── assets/            # Documents and sample data
+├── App.tsx            # Entry point
+└── package.json       # Dependencies
 ```
 
-### Testing Different Contexts
-- **Desktop**: Visit web URL on desktop browser
-- **Mobile Web**: Same URL on mobile or browser dev tools mobile mode
-- **Native**: Scan QR code with Expo Go
-- **Context Override**: Add `?context=desktop|mobile-web|native` to URL
+## Features
 
-## 📋 Project Structure
+- **Context Detection**: Automatically detects desktop, mobile web, and native contexts
+- **WYSIWYG Email Editor**: Touch-optimized editor with drag-and-drop blocks
+- **Cross-Device Storage**: Real-time document sync via Supabase database
+- **Deep Linking**: Native app banner with Expo Go integration
+- **Block-Based Editor**: Container, Text, and Image blocks with property panels
+- **Offline Fallback**: Works with bundled documents when offline
 
-- `/src/components/` - React Native components (blocks, editor, toolbox)
-- `/src/contexts/` - React contexts for app state and deep linking
-- `/src/utils/` - Context detection, document storage, deep linking utilities
-- `/src/types/` - TypeScript interfaces
-- `/assets/documents/` - Pre-seeded demo email documents
-- `/docs/` - Project requirements and specifications
+## Testing the Demo
 
-## 🚀 Deployment
+1. **Web Version**: Test in Snack's web preview
+2. **Native Version**: Use "Open on device" in Snack to test in Expo Go
+3. **Context Switching**: Resize browser or add `?context=mobile-web` to URL
+4. **Deep Linking**: Test banner CTA after updating the URL
 
-### Web Deployment (Vercel)
-```bash
-npx expo export --platform web
-cd dist
-vercel --prod
-```
+## Troubleshooting
 
-### Native Distribution (EAS Update)
-```bash
-eas login
-eas update:configure
-eas update --branch production --message "Release"
-```
+- **Import errors**: All imports should use relative paths (`../`, `./`)
+- **Asset loading**: Documents are now JS exports instead of JSON imports
+- **Deep links**: Update the banner URL after publishing to Snack
 
-## 📖 Documentation
-
-- **CLAUDE.md** - Development workflow and architecture guide
-- **PRODUCTION-NOTES.md** - Production implementation patterns
-- **ROADMAP.md** - Development phases and technical decisions
-- **test-app.md** - Detailed testing instructions
-
-## 🎨 Architecture Highlights
-
-This demo showcases a production-ready architecture for cross-platform mobile applications:
-
-- **Context-Aware Components**: Components adapt behavior based on detected context
-- **Unified Storage API**: Same document storage interface across web and native
-- **Deep Link Handling**: Seamless state transfer between platforms  
-- **Touch-Optimized UI**: 44px+ touch targets and mobile-first interactions
-- **EAS Update Compatible**: No custom native modules, works in Expo Go
-
-Perfect for demonstrating "single codebase, multiple contexts" mobile architecture concepts.
+This version maintains all the core functionality while being optimized for Snack's constraints.
