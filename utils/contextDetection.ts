@@ -27,24 +27,16 @@ class ContextDetectionImpl implements ContextDetection {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const { width } = Dimensions.get('window');
       
-      // Check viewport width
-      if (width >= 1024) {
-        // Additional check for pointer capability
-        const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
-        if (hasFinePointer) {
-          this.context = 'desktop';
-          return this.context;
-        }
-      }
-
-      // Check user agent for mobile indicators
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isMobile = /mobile|android|iphone|ipad|tablet/i.test(userAgent);
-      
-      if (isMobile || width < 1024) {
-        this.context = 'mobile-web';
+      // Check viewport width - Demo focused on phone sizes only
+      // Anything wider than 480px (phone size) shows desktop placeholder
+      if (width > 480) {
+        this.context = 'desktop';
         return this.context;
       }
+
+      // Phone-sized viewports show the mobile editor
+      this.context = 'mobile-web';
+      return this.context;
     }
 
     // Default to desktop if we can't determine

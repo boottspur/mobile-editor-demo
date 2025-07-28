@@ -9,9 +9,9 @@ export const DesktopPlaceholder: React.FC = () => {
         <Text style={styles.subtitle}>Desktop-optimized mobile email editor loads here</Text>
         
         <View style={styles.infoBox}>
-          <Text style={styles.infoTitle}>This is a mobile-first demo</Text>
+          <Text style={styles.infoTitle}>This is a phone-focused demo</Text>
           <Text style={styles.infoText}>
-            To experience the full email editor functionality, please access this demo on a mobile device or resize your browser window to mobile dimensions.
+            This demo is designed specifically for phone-sized screens. Please resize your browser window to 480px or narrower, or access this demo on a mobile device.
           </Text>
         </View>
 
@@ -27,10 +27,10 @@ export const DesktopPlaceholder: React.FC = () => {
 
         <View style={styles.ctaSection}>
           <Text style={styles.ctaText}>
-            Try it now: Resize your window or visit on mobile
+            Try it now: Resize your window to phone width (≤480px)
           </Text>
           <Text style={styles.urlText}>
-            Or add ?context=mobile-web to the URL for demo purposes
+            Or add ?context=mobile-web to the URL to force mobile view
           </Text>
         </View>
       </View>
