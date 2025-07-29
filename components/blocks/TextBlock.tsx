@@ -11,6 +11,7 @@ interface TextBlockProps {
   onUpdate: (props: Partial<TextProps>) => void;
   onStartEdit: () => void;
   onEndEdit: () => void;
+  onShowActions?: () => void;
 }
 
 export const TextBlock: React.FC<TextBlockProps> = ({
@@ -21,6 +22,7 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   onUpdate,
   onStartEdit,
   onEndEdit,
+  onShowActions,
 }) => {
   const [tempContent, setTempContent] = useState(node.props.content);
   const props = node.props;
@@ -67,6 +69,17 @@ export const TextBlock: React.FC<TextBlockProps> = ({
     }
   };
 
+  const handleLongPress = () => {
+    if (!isEditing) {
+      if (onShowActions) {
+        onShowActions();
+      } else {
+        // Fallback to starting edit
+        onStartEdit();
+      }
+    }
+  };
+
   const dragItem = {
     type: 'block' as const,
     item: node as BlockNode,
@@ -77,7 +90,7 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   return (
     <TouchableOpacity 
       onPress={handlePress} 
-      onLongPress={onStartEdit}
+      onLongPress={handleLongPress}
       activeOpacity={0.8}
       style={[
         styles.container,
@@ -88,6 +101,11 @@ export const TextBlock: React.FC<TextBlockProps> = ({
       <Text style={textStyle}>
         {props.content || 'Tap to edit text'}
       </Text>
+      {isSelected && !isEditing && (
+        <View style={styles.selectedIndicator}>
+          <Text style={styles.selectedText}>Long press for actions</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -105,6 +123,20 @@ const styles = StyleSheet.create({
   },
   touchable: {
     minHeight: 24,
+  },
+  selectedIndicator: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#1976d2',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  selectedText: {
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: '500',
   },
   input: {
     minHeight: 30,

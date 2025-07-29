@@ -28,6 +28,7 @@ import { EmailHeader } from './EmailHeader';
 import { SectionBlock } from './SectionBlock';
 import { DragDropProvider, useDragDrop, DragItem, DropZone } from '../contexts/DragDropContext';
 import { DragPreview } from './DragPreview';
+import { BlockActions } from './BlockActions';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -39,6 +40,8 @@ const EmailEditorContent: React.FC = () => {
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [showProperties, setShowProperties] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showBlockActions, setShowBlockActions] = useState(false);
+  const [actionBlockId, setActionBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedBlockId) {
@@ -396,6 +399,7 @@ const EmailEditorContent: React.FC = () => {
             onUpdate={(props) => updateBlock(node.id, { props: { ...node.props, ...props } })}
             onStartEdit={() => setEditingBlockId(node.id)}
             onEndEdit={() => setEditingBlockId(null)}
+            onShowActions={() => handleShowBlockActions(node.id)}
           />
         );
       case 'image':
@@ -691,6 +695,174 @@ const EmailEditorContent: React.FC = () => {
   //   setDropHandler(handleDrop);
   // }, [currentDocument, setDropHandler]);
 
+  const handleShowBlockActions = (blockId: string) => {
+    setActionBlockId(blockId);
+    setShowBlockActions(true);
+  };
+
+  const handleCopyBlock = (block: BlockNode) => {
+    if (!currentDocument) return;
+
+    // Create a copy with new ID
+    const copiedBlock: BlockNode = {
+      ...block,
+      id: `block-${Date.now()}`,
+      // Deep copy props to avoid reference issues
+      props: JSON.parse(JSON.stringify(block.props)),
+    };
+
+    // Find the column containing the original block and add the copy after it
+    const updatedSections = currentDocument.sections.map(section => ({
+      ...section,
+      layouts: section.layouts.map(layout => ({
+        ...layout,
+        columns: layout.columns.map(column => {
+          const blockIndex = column.blocks.findIndex(b => b.id === block.id);
+          if (blockIndex !== -1) {
+            // Insert the copied block right after the original
+            const newBlocks = [...column.blocks];
+            newBlocks.splice(blockIndex + 1, 0, copiedBlock);
+            return { ...column, blocks: newBlocks };
+          }
+          return column;
+        }),
+      })),
+    }));
+
+    setCurrentDocument({
+      ...currentDocument,
+      sections: updatedSections,
+      lastModified: new Date().toISOString(),
+    });
+    setHasChanges(true);
+  };
+
+  const handleDeleteBlock = (blockId: string) => {
+    if (!currentDocument) return;
+
+    const updatedSections = currentDocument.sections.map(section => ({
+      ...section,
+      layouts: section.layouts.map(layout => ({
+        ...layout,
+        columns: layout.columns.map(column => ({
+          ...column,
+          blocks: column.blocks.filter(b => b.id !== blockId),
+        })),
+      })),
+    }));
+
+    setCurrentDocument({
+      ...currentDocument,
+      sections: updatedSections,
+      lastModified: new Date().toISOString(),
+    });
+    setHasChanges(true);
+
+    // Clear selection if deleted block was selected
+    if (selectedBlockId === blockId) {
+      setSelectedBlockId(null);
+    }
+    if (actionBlockId === blockId) {
+      setActionBlockId(null);
+    }
+  };
+
+  const handleMoveBlock = (blockId: string, targetColumnId: string) => {
+    if (!currentDocument) return;
+
+    let blockToMove: BlockNode | null = null;
+    
+    // Find and remove the block from its current location
+    const updatedSections = currentDocument.sections.map(section => ({
+      ...section,
+      layouts: section.layouts.map(layout => ({
+        ...layout,
+        columns: layout.columns.map(column => {
+          const blockIndex = column.blocks.findIndex(b => b.id === blockId);
+          if (blockIndex !== -1) {
+            blockToMove = column.blocks[blockIndex];
+            return {
+              ...column,
+              blocks: column.blocks.filter(b => b.id !== blockId),
+            };
+          }
+          return column;
+        }),
+      })),
+    }));
+
+    if (!blockToMove) return;
+
+    // Add the block to the target column
+    const finalSections = updatedSections.map(section => ({
+      ...section,
+      layouts: section.layouts.map(layout => ({
+        ...layout,
+        columns: layout.columns.map(column => {
+          if (column.id === targetColumnId) {
+            return {
+              ...column,
+              blocks: [...column.blocks, blockToMove!],
+            };
+          }
+          return column;
+        }),
+      })),
+    }));
+
+    setCurrentDocument({
+      ...currentDocument,
+      sections: finalSections,
+      lastModified: new Date().toISOString(),
+    });
+    setHasChanges(true);
+  };
+
+  // Get available columns for block movement
+  const getAvailableColumns = () => {
+    if (!currentDocument) return [];
+
+    const columns: Array<{
+      id: string;
+      label: string;
+      sectionName: string;
+      layoutIndex: number;
+      columnIndex: number;
+    }> = [];
+
+    currentDocument.sections.forEach((section, sectionIndex) => {
+      section.layouts.forEach((layout, layoutIndex) => {
+        layout.columns.forEach((column, columnIndex) => {
+          columns.push({
+            id: column.id,
+            label: `Column ${columnIndex + 1}`,
+            sectionName: section.name || `Section ${sectionIndex + 1}`,
+            layoutIndex,
+            columnIndex,
+          });
+        });
+      });
+    });
+
+    return columns;
+  };
+
+  // Get current column ID for a block
+  const getCurrentColumnId = (blockId: string): string => {
+    if (!currentDocument) return '';
+
+    for (const section of currentDocument.sections) {
+      for (const layout of section.layouts) {
+        for (const column of layout.columns) {
+          if (column.blocks.some(b => b.id === blockId)) {
+            return column.id;
+          }
+        }
+      }
+    }
+    return '';
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -778,6 +950,36 @@ const EmailEditorContent: React.FC = () => {
             onClose={() => setSelectedBlockId(null)}
           />
         )}
+
+        {/* Block Actions Modal */}
+        {showBlockActions && actionBlockId && (() => {
+          // Find the block for actions
+          let actionBlock: BlockNode | null = null;
+          for (const section of currentDocument?.sections || []) {
+            for (const layout of section.layouts) {
+              for (const column of layout.columns) {
+                const found = column.blocks.find(b => b.id === actionBlockId);
+                if (found) {
+                  actionBlock = found;
+                  break;
+                }
+              }
+            }
+          }
+
+          return actionBlock ? (
+            <BlockActions
+              block={actionBlock}
+              visible={showBlockActions}
+              onClose={() => setShowBlockActions(false)}
+              onCopy={handleCopyBlock}
+              onDelete={handleDeleteBlock}
+              onMove={handleMoveBlock}
+              availableColumns={getAvailableColumns()}
+              currentColumnId={getCurrentColumnId(actionBlockId)}
+            />
+          ) : null;
+        })()}
 
         {/* Drag Preview */}
         {/* <DragPreview /> */}
