@@ -7,6 +7,9 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
 } from 'react-native';
 import { BlockNode, ContainerProps, TextProps, ImageProps } from '../types';
 
@@ -130,24 +133,37 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
       transparent
       animationType="slide"
       onRequestClose={onClose}
+      presentationStyle="pageSheet"
+      statusBarTranslucent
     >
-      <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
-        <View style={styles.container} onStartShouldSetResponder={() => true}>
-          <View style={styles.handle} />
-          <View style={styles.header}>
-            <Text style={styles.title}>{block.type.charAt(0).toUpperCase() + block.type.slice(1)} Properties</Text>
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+      <KeyboardAvoidingView 
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
+      >
+        <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
+          <View style={styles.container} onStartShouldSetResponder={() => true}>
+            <View style={styles.handle} />
+            <View style={styles.header}>
+              <Text style={styles.title}>{block.type.charAt(0).toUpperCase() + block.type.slice(1)} Properties</Text>
+              <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+                <Text style={styles.saveButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView 
+              style={styles.content}
+              contentContainerStyle={styles.contentContainer}
+              showsVerticalScrollIndicator={true}
+              keyboardShouldPersistTaps="handled"
+            >
+              {block.type === 'container' && renderContainerProperties()}
+              {block.type === 'text' && renderTextProperties()}
+              {block.type === 'image' && renderImageProperties()}
+            </ScrollView>
           </View>
-          
-          <ScrollView style={styles.content}>
-            {block.type === 'container' && renderContainerProperties()}
-            {block.type === 'text' && renderTextProperties()}
-            {block.type === 'image' && renderImageProperties()}
-          </ScrollView>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -214,7 +230,12 @@ const PropertySelect: React.FC<PropertySelectProps> = ({ label, value, options, 
   </View>
 );
 
+const { height: screenHeight } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
+  keyboardAvoid: {
+    flex: 1,
+  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -224,7 +245,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '80%',
+    maxHeight: screenHeight * 0.7,
+    minHeight: 300,
   },
   handle: {
     width: 40,
@@ -259,6 +281,9 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     paddingBottom: 40,
+  },
+  contentContainer: {
+    paddingBottom: 100, // Extra padding for keyboard
   },
   inputGroup: {
     marginBottom: 20,

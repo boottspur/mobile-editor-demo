@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(25, 118, 210, 0.05)',
   },
   touchable: {
-    minHeight: 24,
+    minHeight: 44, // iOS recommended minimum touch target
   },
   selectedIndicator: {
     position: 'absolute',
