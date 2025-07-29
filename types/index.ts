@@ -15,9 +15,26 @@ export interface EmailDocument {
   created: string;
 }
 
+export type BlockType = 
+  | 'container' 
+  | 'text' 
+  | 'image' 
+  | 'button' 
+  | 'divider' 
+  | 'spacer' 
+  | 'social-share' 
+  | 'social-follow' 
+  | 'video' 
+  | 'read-more' 
+  | 'data-table' 
+  | 'event' 
+  | 'feedback' 
+  | 'rsvp' 
+  | 'product';
+
 export interface BlockNode {
   id: string;
-  type: 'container' | 'text' | 'image';
+  type: BlockType;
   props: Record<string, any>;
   children?: BlockNode[];
 }
@@ -42,4 +59,97 @@ export interface ImageProps {
   alt: string;
   width: string;
   height: string;
+}
+
+export interface ButtonProps {
+  text: string;
+  backgroundColor: string;
+  textColor: string;
+  borderRadius: number;
+  padding: string;
+  url: string;
+  width: string;
+}
+
+export interface DividerProps {
+  color: string;
+  thickness: number;
+  style: 'solid' | 'dashed' | 'dotted';
+  margin: string;
+}
+
+export interface SpacerProps {
+  height: number;
+}
+
+export interface SocialShareProps {
+  platforms: ('facebook' | 'twitter' | 'linkedin' | 'email' | 'whatsapp')[];
+  url: string;
+  title: string;
+  layout: 'horizontal' | 'vertical';
+}
+
+export interface SocialFollowProps {
+  accounts: Array<{
+    platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube';
+    url: string;
+    handle: string;
+  }>;
+  style: 'icons' | 'buttons';
+}
+
+export interface VideoProps {
+  src: string;
+  thumbnail: string;
+  title: string;
+  autoplay: boolean;
+  controls: boolean;
+  width: string;
+  height: string;
+}
+
+export interface ReadMoreProps {
+  shortText: string;
+  fullText: string;
+  buttonText: string;
+  expanded: boolean;
+}
+
+export interface DataTableProps {
+  headers: string[];
+  rows: string[][];
+  striped: boolean;
+  bordered: boolean;
+}
+
+export interface EventProps {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  rsvpUrl?: string;
+}
+
+export interface FeedbackProps {
+  question: string;
+  type: 'rating' | 'yes-no' | 'text';
+  placeholder?: string;
+  submitUrl: string;
+}
+
+export interface RsvpProps {
+  event: string;
+  date: string;
+  options: string[];
+  submitUrl: string;
+}
+
+export interface ProductProps {
+  name: string;
+  image: string;
+  price: string;
+  description: string;
+  buyUrl: string;
+  layout: 'horizontal' | 'vertical';
 }

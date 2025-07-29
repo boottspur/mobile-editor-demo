@@ -9,14 +9,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { EmailDocument, BlockNode } from '../types';
+import { EmailDocument, BlockNode, BlockType } from '../types';
 import { documentStorage } from '../utils/documentStorage';
 import { useDeepLink } from '../contexts/DeepLinkContext';
 import { DocumentList } from './DocumentList';
 import { ContainerBlock } from './blocks/ContainerBlock';
 import { TextBlock } from './blocks/TextBlock';
 import { ImageBlock } from './blocks/ImageBlock';
-import { BlockToolbox } from './BlockToolbox';
+import { ButtonBlock } from './blocks/ButtonBlock';
+import { DividerBlock } from './blocks/DividerBlock';
+import { SpacerBlock } from './blocks/SpacerBlock';
+import { VideoBlock } from './blocks/VideoBlock';
+import { ProductBlock } from './blocks/ProductBlock';
+import { BlockPicker } from './BlockPicker';
 import { PropertyPanel } from './PropertyPanel';
 
 export const MobileEmailEditor: React.FC = () => {
@@ -24,7 +29,6 @@ export const MobileEmailEditor: React.FC = () => {
   const [currentDocument, setCurrentDocument] = useState<EmailDocument | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
-  const [showToolbox, setShowToolbox] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -131,7 +135,7 @@ export const MobileEmailEditor: React.FC = () => {
     setHasChanges(true);
   };
 
-  const addBlock = (type: 'container' | 'text' | 'image') => {
+  const addBlock = (type: BlockType) => {
     if (!currentDocument) return;
 
     const newBlock: BlockNode = {
@@ -146,11 +150,10 @@ export const MobileEmailEditor: React.FC = () => {
       content: [...currentDocument.content, newBlock],
     });
     setHasChanges(true);
-    setShowToolbox(false);
     setSelectedBlockId(newBlock.id);
   };
 
-  const getDefaultProps = (type: string) => {
+  const getDefaultProps = (type: BlockType) => {
     switch (type) {
       case 'container':
         return { padding: 20, backgroundColor: '#ffffff', width: '100%' };
@@ -169,6 +172,99 @@ export const MobileEmailEditor: React.FC = () => {
           alt: 'Image',
           width: '100%',
           height: 'auto',
+        };
+      case 'button':
+        return {
+          text: 'Click Me',
+          backgroundColor: '#1976d2',
+          textColor: '#ffffff',
+          borderRadius: 8,
+          padding: '15px',
+          url: '#',
+          width: 'auto',
+        };
+      case 'divider':
+        return {
+          color: '#e0e0e0',
+          thickness: 1,
+          style: 'solid',
+          margin: '10px 0',
+        };
+      case 'spacer':
+        return { height: 20 };
+      case 'video':
+        return {
+          src: 'https://example.com/video.mp4',
+          thumbnail: 'https://via.placeholder.com/600x338',
+          title: 'Video Title',
+          autoplay: false,
+          controls: true,
+          width: '100%',
+          height: 'auto',
+        };
+      case 'social-share':
+        return {
+          platforms: ['facebook', 'twitter', 'linkedin'],
+          url: 'https://example.com',
+          title: 'Check this out!',
+          layout: 'horizontal',
+        };
+      case 'social-follow':
+        return {
+          accounts: [
+            { platform: 'twitter', url: 'https://twitter.com/example', handle: '@example' },
+            { platform: 'facebook', url: 'https://facebook.com/example', handle: 'Example' },
+          ],
+          style: 'buttons',
+        };
+      case 'read-more':
+        return {
+          shortText: 'This is a preview of the content...',
+          fullText: 'This is a preview of the content that expands when the user clicks read more. You can add much longer text here that will be hidden initially.',
+          buttonText: 'Read More',
+          expanded: false,
+        };
+      case 'data-table':
+        return {
+          headers: ['Column 1', 'Column 2', 'Column 3'],
+          rows: [
+            ['Row 1 Col 1', 'Row 1 Col 2', 'Row 1 Col 3'],
+            ['Row 2 Col 1', 'Row 2 Col 2', 'Row 2 Col 3'],
+          ],
+          striped: true,
+          bordered: true,
+        };
+      case 'event':
+        return {
+          title: 'Event Title',
+          date: '2024-12-01',
+          time: '7:00 PM',
+          location: 'Event Location',
+          description: 'Event description goes here...',
+          rsvpUrl: 'https://example.com/rsvp',
+        };
+      case 'feedback':
+        return {
+          question: 'How was your experience?',
+          type: 'rating',
+          placeholder: 'Your feedback...',
+          submitUrl: 'https://example.com/feedback',
+        };
+      case 'rsvp':
+        return {
+          event: 'Event Name',
+          date: '2024-12-01',
+          options: ['Yes, I will attend', 'No, I cannot attend', 'Maybe'],
+          submitUrl: 'https://example.com/rsvp',
+        };
+      case 'product':
+        return {
+          name: 'Product Name',
+          image: 'https://via.placeholder.com/300x300',
+          price: '$99.99',
+          description: 'Product description goes here...',
+          buyUrl: 'https://example.com/buy',
+          layout: 'vertical',
         };
       default:
         return {};
@@ -211,6 +307,83 @@ export const MobileEmailEditor: React.FC = () => {
             isSelected={isSelected}
             onSelect={() => setSelectedBlockId(node.id)}
           />
+        );
+      case 'button':
+        return (
+          <ButtonBlock
+            key={node.id}
+            node={node as unknown as { id: string; props: import('../types').ButtonProps }}
+            isSelected={isSelected}
+            onSelect={() => setSelectedBlockId(node.id)}
+          />
+        );
+      case 'divider':
+        return (
+          <DividerBlock
+            key={node.id}
+            node={node as unknown as { id: string; props: import('../types').DividerProps }}
+            isSelected={isSelected}
+            onSelect={() => setSelectedBlockId(node.id)}
+          />
+        );
+      case 'spacer':
+        return (
+          <SpacerBlock
+            key={node.id}
+            node={node as unknown as { id: string; props: import('../types').SpacerProps }}
+            isSelected={isSelected}
+            onSelect={() => setSelectedBlockId(node.id)}
+          />
+        );
+      case 'video':
+        return (
+          <VideoBlock
+            key={node.id}
+            node={node as unknown as { id: string; props: import('../types').VideoProps }}
+            isSelected={isSelected}
+            onSelect={() => setSelectedBlockId(node.id)}
+          />
+        );
+      case 'product':
+        return (
+          <ProductBlock
+            key={node.id}
+            node={node as unknown as { id: string; props: import('../types').ProductProps }}
+            isSelected={isSelected}
+            onSelect={() => setSelectedBlockId(node.id)}
+          />
+        );
+      // Placeholder blocks for remaining types
+      case 'social-share':
+      case 'social-follow':
+      case 'read-more':
+      case 'data-table':
+      case 'event':
+      case 'feedback':
+      case 'rsvp':
+        return (
+          <TouchableOpacity
+            key={node.id}
+            style={{
+              padding: 20,
+              backgroundColor: '#f8f9fa',
+              borderRadius: 8,
+              borderWidth: isSelected ? 2 : 1,
+              borderColor: isSelected ? '#ff9800' : '#e0e0e0',
+              borderStyle: isSelected ? 'dashed' : 'solid',
+            }}
+            onPress={(event) => {
+              event.stopPropagation();
+              setSelectedBlockId(node.id);
+            }}
+          >
+            <Text style={{ textAlign: 'center', color: '#666', fontSize: 16 }}>
+              {node.type.charAt(0).toUpperCase() + node.type.slice(1).replace('-', ' ')} Block
+            </Text>
+            <Text style={{ textAlign: 'center', color: '#999', fontSize: 12, marginTop: 4 }}>
+              Coming soon!
+            </Text>
+          </TouchableOpacity>
         );
       default:
         return null;
@@ -261,21 +434,8 @@ export const MobileEmailEditor: React.FC = () => {
           )}
         </ScrollView>
 
-        <View style={styles.toolbar}>
-          <TouchableOpacity
-            style={styles.toolbarButton}
-            onPress={() => setShowToolbox(true)}
-          >
-            <Text style={styles.toolbarButtonText}>+ Add Block</Text>
-          </TouchableOpacity>
-        </View>
-
-        {showToolbox && (
-          <BlockToolbox
-            onSelectType={addBlock}
-            onClose={() => setShowToolbox(false)}
-          />
-        )}
+        {/* FAB Block Picker */}
+        <BlockPicker onSelectType={addBlock} />
 
         {showProperties && selectedBlock && (
           <PropertyPanel
@@ -336,7 +496,7 @@ const styles = StyleSheet.create({
   },
   canvasContent: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 20,
   },
   blockWrapper: {
     marginBottom: 15,
@@ -348,28 +508,5 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     color: '#999',
-  },
-  toolbar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  toolbarButton: {
-    backgroundColor: '#1976d2',
-    paddingVertical: 15,
-    borderRadius: 25,
-    alignItems: 'center',
-  },
-  toolbarButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
