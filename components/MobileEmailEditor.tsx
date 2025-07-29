@@ -30,6 +30,8 @@ import { DragDropProvider, useDragDrop, DragItem, DropZone } from '../contexts/D
 import { DragPreview } from './DragPreview';
 import { BlockActions } from './BlockActions';
 import { GlobalStylesEditor } from './GlobalStylesEditor';
+import { ViewModeToggle, ViewMode } from './ViewModeToggle';
+import { ResponsiveView } from './ResponsiveView';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -44,6 +46,7 @@ const EmailEditorContent: React.FC = () => {
   const [showBlockActions, setShowBlockActions] = useState(false);
   const [actionBlockId, setActionBlockId] = useState<string | null>(null);
   const [showGlobalStyles, setShowGlobalStyles] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('mobile');
 
   useEffect(() => {
     if (selectedBlockId) {
@@ -909,57 +912,65 @@ const EmailEditorContent: React.FC = () => {
               <Text style={styles.toolButtonText}>Global Styles</Text>
             </TouchableOpacity>
           </View>
+          
+          <ViewModeToggle
+            currentMode={viewMode}
+            onModeChange={setViewMode}
+          />
         </View>
 
-        <ScrollView
-          style={styles.canvas}
-          contentContainerStyle={styles.canvasContent}
-          onTouchStart={() => {
-            setSelectedBlockId(null);
-            setSelectedSectionId(null);
-            setSelectedLayoutId(null);
-          }}
-        >
-          {currentDocument.sections.map((section, sectionIndex) => (
-            <SectionBlock
-              key={section.id}
-              section={section}
-              isSelected={selectedSectionId === section.id}
-              onSelect={() => setSelectedSectionId(section.id)}
-              onUpdate={(updates) => handleSectionUpdate(section.id, updates)}
-              onDelete={() => handleSectionDelete(section.id)}
-              onDuplicate={() => handleSectionDuplicate(section.id)}
-              onMoveUp={() => handleSectionMove(sectionIndex, sectionIndex - 1)}
-              onMoveDown={() => handleSectionMove(sectionIndex, sectionIndex + 1)}
-              renderBlock={renderBlock}
-              onAddBlock={(columnId, type) => addBlock(type, columnId)}
-              selectedLayoutId={selectedLayoutId}
-              onSelectLayout={setSelectedLayoutId}
-            />
-          ))}
-          
-          {currentDocument.sections.length === 0 && (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>No sections yet</Text>
+        <ResponsiveView viewMode={viewMode} style={styles.canvas}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.canvasContent}
+            onTouchStart={() => {
+              setSelectedBlockId(null);
+              setSelectedSectionId(null);
+              setSelectedLayoutId(null);
+            }}
+          >
+            {currentDocument.sections.map((section, sectionIndex) => (
+              <SectionBlock
+                key={section.id}
+                section={section}
+                isSelected={selectedSectionId === section.id}
+                onSelect={() => setSelectedSectionId(section.id)}
+                onUpdate={(updates) => handleSectionUpdate(section.id, updates)}
+                onDelete={() => handleSectionDelete(section.id)}
+                onDuplicate={() => handleSectionDuplicate(section.id)}
+                onMoveUp={() => handleSectionMove(sectionIndex, sectionIndex - 1)}
+                onMoveDown={() => handleSectionMove(sectionIndex, sectionIndex + 1)}
+                renderBlock={renderBlock}
+                onAddBlock={(columnId, type) => addBlock(type, columnId)}
+                selectedLayoutId={selectedLayoutId}
+                onSelectLayout={setSelectedLayoutId}
+                viewMode={viewMode}
+              />
+            ))}
+            
+            {currentDocument.sections.length === 0 && (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>No sections yet</Text>
+                <TouchableOpacity
+                  style={styles.addSectionButton}
+                  onPress={addSection}
+                >
+                  <Text style={styles.addSectionText}>+ Add First Section</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Add Section Button */}
+            {currentDocument.sections.length > 0 && (
               <TouchableOpacity
                 style={styles.addSectionButton}
                 onPress={addSection}
               >
-                <Text style={styles.addSectionText}>+ Add First Section</Text>
+                <Text style={styles.addSectionText}>+ Add Section</Text>
               </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Add Section Button */}
-          {currentDocument.sections.length > 0 && (
-            <TouchableOpacity
-              style={styles.addSectionButton}
-              onPress={addSection}
-            >
-              <Text style={styles.addSectionText}>+ Add Section</Text>
-            </TouchableOpacity>
-          )}
-        </ScrollView>
+            )}
+          </ScrollView>
+        </ResponsiveView>
 
         {/* FAB Block Picker */}
         <BlockPicker onSelectType={(type) => addBlock(type)} />
@@ -1074,6 +1085,9 @@ const styles = StyleSheet.create({
   canvas: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  scrollView: {
+    flex: 1,
   },
   canvasContent: {
     padding: 20,

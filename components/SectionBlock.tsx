@@ -24,6 +24,7 @@ interface SectionBlockProps {
   onAddBlock: (columnId: string, type: BlockType) => void;
   selectedLayoutId?: string;
   onSelectLayout: (layoutId: string) => void;
+  viewMode?: 'mobile' | 'desktop';
 }
 
 export const SectionBlock: React.FC<SectionBlockProps> = ({
@@ -39,6 +40,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   onAddBlock,
   selectedLayoutId,
   onSelectLayout,
+  viewMode = 'mobile',
 }) => {
   const [showNameEditor, setShowNameEditor] = useState(false);
   const [editedName, setEditedName] = useState(section.name || '');
@@ -196,6 +198,7 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               }}
               sectionId={section.id}
               layoutIndex={section.layouts.findIndex(l => l.id === layout.id)}
+              viewMode={viewMode}
             />
           ))}
 

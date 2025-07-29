@@ -25,6 +25,7 @@ interface LayoutBlockProps {
   onMoveBlock: (fromColumnId: string, toColumnId: string, fromIndex: number, toIndex: number) => void;
   sectionId: string;
   layoutIndex: number;
+  viewMode?: 'mobile' | 'desktop';
 }
 
 export const LayoutBlock: React.FC<LayoutBlockProps> = ({
@@ -39,6 +40,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
   onMoveBlock,
   sectionId,
   layoutIndex,
+  viewMode = 'mobile',
 }) => {
   const [showControls, setShowControls] = useState(false);
 
@@ -160,13 +162,16 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
         )}
 
         {/* Columns */}
-        <View style={styles.layoutColumns}>
+        <View style={[
+          styles.layoutColumns,
+          viewMode === 'mobile' && styles.layoutColumnsMobile,
+        ]}>
           {layout.columns.map((column, index) => (
             <View
               key={column.id}
               style={[
                 styles.column,
-                { flex: column.width / 100 },
+                viewMode === 'desktop' ? { flex: column.width / 100 } : styles.columnMobile,
                 isSelected && styles.selectedColumn,
               ]}
             >
@@ -174,7 +179,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
               {isSelected && (
                 <View style={styles.columnHeader}>
                   <Text style={styles.columnTitle}>
-                    {column.width}%
+                    {viewMode === 'desktop' ? `${column.width}%` : `Column ${index + 1}`}
                   </Text>
                   {layout.columns.length > 1 && (
                     <TouchableOpacity
@@ -347,8 +352,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  layoutColumnsMobile: {
+    flexDirection: 'column',
+    gap: 15,
+  },
   column: {
     minHeight: 50,
+  },
+  columnMobile: {
+    width: '100%',
+    marginBottom: 10,
   },
   selectedColumn: {
     backgroundColor: 'rgba(25, 118, 210, 0.05)',
