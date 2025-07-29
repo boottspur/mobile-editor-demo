@@ -60,23 +60,146 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
     });
   };
 
-  const renderDocument = ({ item }: { item: EmailDocument }) => (
-    <TouchableOpacity
-      style={styles.documentCard}
-      onPress={() => onSelectDocument(item)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.thumbnail}>
-        <View style={styles.thumbnailGrid}>
-          <View style={styles.thumbnailBlock} />
-          <View style={styles.thumbnailBlock} />
-          <View style={[styles.thumbnailBlock, styles.thumbnailBlockWide]} />
-          <View style={styles.thumbnailBlock} />
+  const getThumbnailType = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('newsletter') || lowerName.includes('weekly')) return 'newsletter';
+    if (lowerName.includes('welcome') || lowerName.includes('onboard')) return 'welcome';
+    if (lowerName.includes('promo') || lowerName.includes('sale') || lowerName.includes('offer')) return 'promo';
+    if (lowerName.includes('product') || lowerName.includes('launch')) return 'product';
+    return 'generic';
+  };
+
+  const renderThumbnail = (type: string) => {
+    switch (type) {
+      case 'newsletter':
+        return (
+          <View style={styles.emailThumbnail}>
+            {/* Header */}
+            <View style={styles.emailHeader}>
+              <View style={[styles.emailLogo, { backgroundColor: '#1976d2' }]} />
+              <View style={styles.emailNav}>
+                <View style={styles.navItem} />
+                <View style={styles.navItem} />
+                <View style={styles.navItem} />
+              </View>
+            </View>
+            {/* Hero section */}
+            <View style={styles.emailHero}>
+              <View style={[styles.heroImage, { backgroundColor: '#e3f2fd' }]} />
+              <View style={styles.heroText}>
+                <View style={[styles.textLine, { width: '80%' }]} />
+                <View style={[styles.textLine, { width: '60%' }]} />
+              </View>
+            </View>
+            {/* Content blocks */}
+            <View style={styles.emailContent}>
+              <View style={styles.contentBlock}>
+                <View style={[styles.textLine, { width: '100%' }]} />
+                <View style={[styles.textLine, { width: '75%' }]} />
+              </View>
+            </View>
+          </View>
+        );
+      
+      case 'welcome':
+        return (
+          <View style={styles.emailThumbnail}>
+            {/* Header */}
+            <View style={styles.emailHeader}>
+              <View style={[styles.emailLogo, { backgroundColor: '#4caf50' }]} />
+            </View>
+            {/* Welcome message */}
+            <View style={styles.welcomeContent}>
+              <View style={[styles.welcomeIcon, { backgroundColor: '#4caf50' }]} />
+              <View style={[styles.textLine, { width: '70%', backgroundColor: '#333' }]} />
+              <View style={[styles.textLine, { width: '90%' }]} />
+              <View style={[styles.textLine, { width: '80%' }]} />
+              <View style={[styles.ctaButton, { backgroundColor: '#4caf50' }]} />
+            </View>
+          </View>
+        );
+      
+      case 'promo':
+        return (
+          <View style={styles.emailThumbnail}>
+            {/* Header */}
+            <View style={styles.emailHeader}>
+              <View style={[styles.emailLogo, { backgroundColor: '#ff9800' }]} />
+            </View>
+            {/* Promo banner */}
+            <View style={[styles.promoBanner, { backgroundColor: '#ff9800' }]}>
+              <View style={[styles.promoText, { backgroundColor: '#fff' }]} />
+            </View>
+            {/* Product grid */}
+            <View style={styles.productGrid}>
+              <View style={[styles.productItem, { backgroundColor: '#f5f5f5' }]} />
+              <View style={[styles.productItem, { backgroundColor: '#f5f5f5' }]} />
+            </View>
+            <View style={styles.productGrid}>
+              <View style={[styles.productItem, { backgroundColor: '#f5f5f5' }]} />
+              <View style={[styles.productItem, { backgroundColor: '#f5f5f5' }]} />
+            </View>
+          </View>
+        );
+      
+      case 'product':
+        return (
+          <View style={styles.emailThumbnail}>
+            {/* Header */}
+            <View style={styles.emailHeader}>
+              <View style={[styles.emailLogo, { backgroundColor: '#9c27b0' }]} />
+            </View>
+            {/* Product showcase */}
+            <View style={styles.productShowcase}>
+              <View style={[styles.productImage, { backgroundColor: '#e1bee7' }]} />
+              <View style={styles.productInfo}>
+                <View style={[styles.textLine, { width: '60%', backgroundColor: '#333' }]} />
+                <View style={[styles.textLine, { width: '40%' }]} />
+                <View style={[styles.textLine, { width: '80%' }]} />
+                <View style={[styles.ctaButton, { backgroundColor: '#9c27b0' }]} />
+              </View>
+            </View>
+          </View>
+        );
+      
+      default: // generic
+        return (
+          <View style={styles.emailThumbnail}>
+            {/* Header */}
+            <View style={styles.emailHeader}>
+              <View style={[styles.emailLogo, { backgroundColor: '#607d8b' }]} />
+            </View>
+            {/* Generic content */}
+            <View style={styles.genericContent}>
+              <View style={[styles.textLine, { width: '100%', backgroundColor: '#333' }]} />
+              <View style={[styles.textLine, { width: '80%' }]} />
+              <View style={[styles.textLine, { width: '90%' }]} />
+              <View style={[styles.textLine, { width: '60%' }]} />
+              <View style={styles.spacer} />
+              <View style={[styles.textLine, { width: '85%' }]} />
+              <View style={[styles.textLine, { width: '70%' }]} />
+            </View>
+          </View>
+        );
+    }
+  };
+
+  const renderDocument = ({ item }: { item: EmailDocument }) => {
+    const thumbnailType = getThumbnailType(item.name);
+    
+    return (
+      <TouchableOpacity
+        style={styles.documentCard}
+        onPress={() => onSelectDocument(item)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.thumbnail}>
+          {renderThumbnail(thumbnailType)}
         </View>
-      </View>
-      <Text style={styles.documentTitle}>{item.name}</Text>
-    </TouchableOpacity>
-  );
+        <Text style={styles.documentTitle}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -296,28 +419,128 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   thumbnail: {
-    height: 80,
-    backgroundColor: '#f8f9fa',
+    height: 100,
+    backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 12,
-    padding: 8,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
-  thumbnailGrid: {
+  emailThumbnail: {
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 4,
+    backgroundColor: '#fff',
   },
-  thumbnailBlock: {
+  emailHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+    paddingVertical: 3,
+    backgroundColor: '#fafafa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  emailLogo: {
+    width: 12,
+    height: 8,
+    borderRadius: 2,
+  },
+  emailNav: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  navItem: {
+    width: 8,
+    height: 3,
+    backgroundColor: '#ccc',
+    borderRadius: 1,
+  },
+  emailHero: {
+    padding: 4,
+    alignItems: 'center',
+  },
+  heroImage: {
+    width: '100%',
+    height: 16,
+    borderRadius: 2,
+    marginBottom: 2,
+  },
+  heroText: {
+    width: '100%',
+    alignItems: 'center',
+    gap: 1,
+  },
+  emailContent: {
+    padding: 4,
+    paddingTop: 0,
+  },
+  contentBlock: {
+    gap: 1,
+  },
+  textLine: {
+    height: 2,
+    backgroundColor: '#ddd',
+    borderRadius: 1,
+  },
+  welcomeContent: {
+    padding: 4,
+    alignItems: 'center',
+    gap: 3,
+  },
+  welcomeIcon: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginBottom: 2,
+  },
+  ctaButton: {
+    width: 24,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 2,
+  },
+  promoBanner: {
+    height: 12,
+    margin: 4,
+    borderRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  promoText: {
+    width: 20,
+    height: 3,
+    borderRadius: 1,
+  },
+  productGrid: {
+    flexDirection: 'row',
+    gap: 2,
+    paddingHorizontal: 4,
+    marginBottom: 2,
+  },
+  productItem: {
     flex: 1,
     height: 16,
-    backgroundColor: '#e9ecef',
     borderRadius: 2,
-    minWidth: 30,
   },
-  thumbnailBlockWide: {
-    flex: 2,
-    backgroundColor: '#1976d2',
+  productShowcase: {
+    padding: 4,
+    gap: 3,
+  },
+  productImage: {
+    width: '100%',
+    height: 20,
+    borderRadius: 2,
+  },
+  productInfo: {
+    gap: 1,
+  },
+  genericContent: {
+    padding: 4,
+    gap: 2,
+  },
+  spacer: {
+    height: 3,
   },
   modalOverlay: {
     flex: 1,

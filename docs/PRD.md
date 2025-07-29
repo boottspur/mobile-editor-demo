@@ -4,7 +4,7 @@
 
 This demo showcases a mobile-first email editor component designed to integrate into existing email marketing platforms. The goal is to demonstrate how treating the mobile experience as a user context and not just a technical environment can improve user activation, increase free-to-paid conversion, and achieve desktop editor parity on mobile devices (and all the downstream success inherent in that).
 
-**Important**: This is a demonstration of an editor component. It would integrate into existing mobile contexts while not altering anything before or after the editing experience, and would not change anything about the primary desktop context.
+**Important**: This is a demonstration of an editor component. It is not intended to be production ready code, or even be used for production ready code. It is for demonstration purposes only.
 
 ## Business Goals & Success Metrics
 

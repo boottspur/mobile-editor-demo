@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 
-export type ViewMode = 'mobile' | 'desktop';
+export type ViewMode = 'mobile' | 'desktop' | 'text';
 
 interface ViewModeToggleProps {
   currentMode: ViewMode;

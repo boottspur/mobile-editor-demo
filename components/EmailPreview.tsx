@@ -52,7 +52,7 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
   const handleSchedule = () => {
     Alert.alert(
       '📅 Schedule Email',
-      'Schedule this email to be sent at a specific date and time.\n\nThis feature would integrate with your email service provider to queue emails for future delivery.',
+      'Schedule this email to be sent at a specific date and time.\n\nThis feature would progress the user to the existing scheduling feature in the flow.',
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Schedule', onPress: () => {

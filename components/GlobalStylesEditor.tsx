@@ -147,106 +147,111 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
       )}
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {/* Background Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Background</Text>
-              <Text style={styles.sectionDescription}>
-                Set the overall email background appearance
-              </Text>
-            </View>
-
-            <ColorPicker
-              title="Background Color"
-              colors={backgroundColors}
-              selectedColor={editedStyles.bodyBackgroundColor || '#f5f5f5'}
-              onSelect={(color) => updateStyle('bodyBackgroundColor', color)}
-            />
-          </View>
-
-          {/* Typography Section */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Typography</Text>
-              <Text style={styles.sectionDescription}>
-                Control text appearance across all content
-              </Text>
-            </View>
-
-            {/* Font Family */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Font Family</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={styles.chipContainer}>
-                  {fontFamilies.map((font) => (
-                    <TouchableOpacity
-                      key={font}
-                      style={[
-                        styles.chip,
-                        editedStyles.fontFamily === font && styles.activeChip,
-                      ]}
-                      onPress={() => updateStyle('fontFamily', font)}
-                    >
-                      <Text style={[
-                        styles.chipText,
-                        editedStyles.fontFamily === font && styles.activeChipText,
-                      ]}>
-                        {font.split(',')[0]}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+          {/* Show general styles only in desktop mode */}
+          {!mobileDesignMode && (
+            <>
+              {/* Background Section */}
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Background</Text>
+                  <Text style={styles.sectionDescription}>
+                    Set the overall email background appearance
+                  </Text>
                 </View>
-              </ScrollView>
-            </View>
 
-            {/* Font Size */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Base Font Size</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={styles.chipContainer}>
-                  {fontSizes.map((size) => (
-                    <TouchableOpacity
-                      key={size}
-                      style={[
-                        styles.sizeChip,
-                        editedStyles.fontSize === size && styles.activeChip,
-                      ]}
-                      onPress={() => updateStyle('fontSize', size)}
-                    >
-                      <Text style={[
-                        styles.chipText,
-                        editedStyles.fontSize === size && styles.activeChipText,
-                      ]}>
-                        {size}px
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                <ColorPicker
+                  title="Background Color"
+                  colors={backgroundColors}
+                  selectedColor={editedStyles.bodyBackgroundColor || '#f5f5f5'}
+                  onSelect={(color) => updateStyle('bodyBackgroundColor', color)}
+                />
+              </View>
+
+              {/* Typography Section */}
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <Text style={styles.sectionTitle}>Typography</Text>
+                  <Text style={styles.sectionDescription}>
+                    Control text appearance across all content
+                  </Text>
                 </View>
-              </ScrollView>
-            </View>
 
-            {/* Text Colors */}
-            <ColorPicker
-              title="Text Color"
-              colors={textColors}
-              selectedColor={editedStyles.textColor || '#333333'}
-              onSelect={(color) => updateStyle('textColor', color)}
-            />
+                {/* Font Family */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Font Family</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View style={styles.chipContainer}>
+                      {fontFamilies.map((font) => (
+                        <TouchableOpacity
+                          key={font}
+                          style={[
+                            styles.chip,
+                            editedStyles.fontFamily === font && styles.activeChip,
+                          ]}
+                          onPress={() => updateStyle('fontFamily', font)}
+                        >
+                          <Text style={[
+                            styles.chipText,
+                            editedStyles.fontFamily === font && styles.activeChipText,
+                          ]}>
+                            {font.split(',')[0]}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
 
-            <ColorPicker
-              title="Link Color"
-              colors={textColors}
-              selectedColor={editedStyles.linkColor || '#1976d2'}
-              onSelect={(color) => updateStyle('linkColor', color)}
-            />
+                {/* Font Size */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Base Font Size</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View style={styles.chipContainer}>
+                      {fontSizes.map((size) => (
+                        <TouchableOpacity
+                          key={size}
+                          style={[
+                            styles.sizeChip,
+                            editedStyles.fontSize === size && styles.activeChip,
+                          ]}
+                          onPress={() => updateStyle('fontSize', size)}
+                        >
+                          <Text style={[
+                            styles.chipText,
+                            editedStyles.fontSize === size && styles.activeChipText,
+                          ]}>
+                            {size}px
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
 
-            <ColorPicker
-              title="Heading Color"
-              colors={textColors}
-              selectedColor={editedStyles.headingColor || '#000000'}
-              onSelect={(color) => updateStyle('headingColor', color)}
-            />
-          </View>
+                {/* Text Colors */}
+                <ColorPicker
+                  title="Text Color"
+                  colors={textColors}
+                  selectedColor={editedStyles.textColor || '#333333'}
+                  onSelect={(color) => updateStyle('textColor', color)}
+                />
+
+                <ColorPicker
+                  title="Link Color"
+                  colors={textColors}
+                  selectedColor={editedStyles.linkColor || '#1976d2'}
+                  onSelect={(color) => updateStyle('linkColor', color)}
+                />
+
+                <ColorPicker
+                  title="Heading Color"
+                  colors={textColors}
+                  selectedColor={editedStyles.headingColor || '#000000'}
+                  onSelect={(color) => updateStyle('headingColor', color)}
+                />
+              </View>
+            </>
+          )}
 
           {/* Mobile-Specific Section - only show in mobile design mode */}
           {mobileDesignMode && (
@@ -344,46 +349,74 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
           {/* Reset Section */}
           <View style={styles.section}>
             <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-              <Text style={styles.resetButtonText}>↻ Reset to Defaults</Text>
+              <Text style={styles.resetButtonText}>
+                ↻ Reset {mobileDesignMode ? 'Mobile Settings' : 'to Defaults'}
+              </Text>
             </TouchableOpacity>
           </View>
 
           {/* Preview Section */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Preview</Text>
+            <Text style={styles.sectionTitle}>
+              {mobileDesignMode ? '📱 Mobile Preview' : 'Preview'}
+            </Text>
             <View style={[
               styles.preview,
-              { backgroundColor: editedStyles.bodyBackgroundColor || '#f5f5f5' }
+              { backgroundColor: editedStyles.bodyBackgroundColor || '#f5f5f5' },
+              mobileDesignMode && styles.mobilePreview
             ]}>
-              <Text style={[
-                styles.previewText,
-                {
-                  fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
-                  fontSize: editedStyles.fontSize || 16,
-                  color: editedStyles.textColor || '#333333',
-                }
-              ]}>
-                Sample body text with your chosen styles.
-              </Text>
-              <Text style={[
-                styles.previewHeading,
-                {
-                  fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
-                  color: editedStyles.headingColor || '#000000',
-                }
-              ]}>
-                Sample Heading
-              </Text>
-              <Text style={[
-                styles.previewLink,
-                {
-                  fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
-                  fontSize: editedStyles.fontSize || 16,
-                  color: editedStyles.linkColor || '#1976d2',
-                }
-              ]}>
-                Sample Link Text
-              </Text>
+              {mobileDesignMode ? (
+                <View style={styles.mobilePreviewContent}>
+                  <Text style={styles.mobilePreviewLabel}>Mobile Optimizations:</Text>
+                  <Text style={styles.mobilePreviewItem}>
+                    Font Size: {editedStyles.mobileFontSize || 'Default'}px
+                  </Text>
+                  <Text style={styles.mobilePreviewItem}>
+                    Container Padding: {editedStyles.mobilePadding || 'Default'}px
+                  </Text>
+                  <Text style={styles.mobilePreviewItem}>
+                    Button Height: {editedStyles.mobileButtonHeight || 'Default'}px
+                  </Text>
+                  <View style={[
+                    styles.mobileButtonPreview,
+                    { height: editedStyles.mobileButtonHeight || 44 }
+                  ]}>
+                    <Text style={styles.mobileButtonText}>Sample Mobile Button</Text>
+                  </View>
+                </View>
+              ) : (
+                <>
+                  <Text style={[
+                    styles.previewText,
+                    {
+                      fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
+                      fontSize: editedStyles.fontSize || 16,
+                      color: editedStyles.textColor || '#333333',
+                    }
+                  ]}>
+                    Sample body text with your chosen styles.
+                  </Text>
+                  <Text style={[
+                    styles.previewHeading,
+                    {
+                      fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
+                      color: editedStyles.headingColor || '#000000',
+                    }
+                  ]}>
+                    Sample Heading
+                  </Text>
+                  <Text style={[
+                    styles.previewLink,
+                    {
+                      fontFamily: editedStyles.fontFamily?.split(',')[0] || 'Arial',
+                      fontSize: editedStyles.fontSize || 16,
+                      color: editedStyles.linkColor || '#1976d2',
+                    }
+                  ]}>
+                    Sample Link Text
+                  </Text>
+                </>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -582,5 +615,34 @@ const styles = StyleSheet.create({
   },
   previewLink: {
     textDecorationLine: 'underline',
+  },
+  mobilePreview: {
+    backgroundColor: '#f8f9fa',
+  },
+  mobilePreviewContent: {
+    gap: 8,
+  },
+  mobilePreviewLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  mobilePreviewItem: {
+    fontSize: 13,
+    color: '#666',
+    paddingLeft: 8,
+  },
+  mobileButtonPreview: {
+    backgroundColor: '#1976d2',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  mobileButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
