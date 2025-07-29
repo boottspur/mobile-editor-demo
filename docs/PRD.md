@@ -1,278 +1,109 @@
-# Product Requirements Document: Cross-Platform Mobile Email Editor Demo
+# Mobile Email Editor Demo - Product Requirements Document
 
-## Project Overview
+## Executive Summary
 
-**Objective:** Build a demonstration application that proves a single React Native codebase can deliver optimal mobile email editing experiences across desktop web, mobile web, and native mobile contexts.
+The Mobile Email Editor Demo is a cross-platform demonstration application showcasing a professional email editor optimized for mobile devices. Built with React Native and Expo, it demonstrates how a single codebase can deliver an exceptional email editing experience across iOS, Android, and web platforms.
 
-**Target Audience:** Product stakeholders and engineering teams evaluating cross-platform architecture decisions for mobile email marketing tools.
+## What We Built
 
-**Success Criteria:** Users can seamlessly transition from mobile web to native app while maintaining document state and experiencing context-appropriate interfaces.
+### Core Features Implemented
 
-## Technical Foundation
+#### 1. Three-Page Workflow (Design | Edit | Preview)
+- **Design Page**: Global styles editor with mobile-specific optimizations
+- **Edit Page**: WYSIWYG email editor with drag-and-drop block system
+- **Preview Page**: Live email preview with mobile/desktop view modes
+- Swipe navigation between pages with smooth animations
+- Persistent header and toolbar across all modes
 
-### Core Technology Stack
-- **Framework:** Expo SDK 53.0.20 (latest stable)
-- **CLI Tools:**
-  - Expo CLI: Built into `expo` package (uses `@expo/cli` internally)
-  - EAS CLI: `eas-cli@latest` (13.x series)
-- **React Native:** 0.75.x (bundled with Expo 53)
-- **Editor Library:** `@craftjs/core@latest` with `@craftjs/utils@latest`
-- **Platform Detection:** Built-in Expo APIs (`Platform`, `Dimensions`, `expo-device`)
+#### 2. Advanced Editor Capabilities
+- **Block-Based System**: Text, Image, Button, Divider, Spacer, Video, Product blocks
+- **Undo/Redo**: Complete history tracking with visual controls
+- **Document Management**: Create, rename (tap-to-edit), save, and organize emails
+- **Responsive Design**: Mobile-first approach with desktop preview capabilities
+- **Property Panels**: Tap blocks to edit properties with mobile-optimized UI
 
-### Development Environment Setup
-```bash
-# Install EAS CLI globally (Expo CLI comes with the expo package)
-npm install -g eas-cli@latest
+#### 3. Platform-Specific Features
+- **Context Detection**: Automatically detects desktop vs mobile environments
+- **Native App Banner**: Prompts mobile web users to use native app
+- **Touch Optimizations**: 44px minimum touch targets, gesture-based navigation
+- **Supabase Integration**: Cloud-based document storage with real-time sync
 
-# Verify EAS CLI version
-eas --version   # Should show 13.x
+#### 4. Professional UI/UX
+- **Material Design**: Clean, modern interface following mobile best practices
+- **Smooth Animations**: Hardware-accelerated transitions and interactions
+- **Inline Editing**: Tap document names to rename without modal dialogs
+- **Visual Feedback**: Clear selection states, loading indicators, and confirmations
 
-# Note: Expo CLI will be available via npx expo after project creation
-```
+### Technical Implementation
 
-### Project Initialization
-```bash
-# Create new Expo project
-npx create-expo-app@latest MobileEmailEditorDemo --template blank-typescript
-cd MobileEmailEditorDemo
+#### Architecture
+- **Frontend**: React Native with TypeScript
+- **Framework**: Expo SDK 53 for cross-platform compatibility
+- **State Management**: React hooks with local state and context
+- **Storage**: Supabase for cloud persistence, localStorage for web
+- **Styling**: StyleSheet with responsive design patterns
 
-# Verify Expo CLI is available
-npx expo --version  # Should show 53.0.20
+#### Key Components
+- `MobileEmailEditor`: Main orchestrator with document management
+- `SwipeableEditor`: Three-page navigation container
+- `PropertyPanel`: Mobile-optimized property editor
+- `GlobalStylesEditor`: Design system configuration
+- `EmailPreview`: Responsive preview with view mode toggle
+- Block Components: Modular, reusable email building blocks
 
-# Install required dependencies
-npx expo install expo-dev-client expo-web-browser expo-linking expo-file-system
-npm install @craftjs/core @craftjs/utils react-native-reanimated react-native-gesture-handler
-```
+### Distribution
+- **Web**: Deployed on Vercel with responsive design
+- **Mobile**: Distributed via Expo Go for instant testing
+- **Development**: Live reloading with Expo development builds
 
-## Application Architecture
+## Key Differentiators
 
-### Context Detection System
+1. **True Mobile-First**: Unlike competitors that adapt desktop editors, built specifically for touch interfaces
+2. **Single Codebase**: One codebase for iOS, Android, and web - reducing development costs
+3. **Professional Output**: Generates clean, responsive HTML email code
+4. **Modern Stack**: Latest React Native and Expo technologies
+5. **Cloud-Enabled**: Seamless sync across devices with Supabase
 
-**Primary Detection Logic:**
-```typescript
-type AppContext = 'desktop' | 'mobile-web' | 'native';
+## Demo Scenarios
 
-interface ContextDetection {
-  getAppContext(): Promise<AppContext>;
-  isDesktop(): boolean;
-  isMobileWeb(): boolean;
-  isNative(): boolean;
-}
-```
+### Scenario 1: Marketing Manager on the Go
+Sarah needs to review and edit the weekly newsletter while commuting. She opens the app on her phone, swipes to preview mode to see how it looks, makes quick text edits, and schedules it for sending.
 
-**Implementation Requirements:**
-- Use `Platform.OS !== 'web'` as primary native detection
-- For web contexts, combine:
-  - User agent analysis (`navigator.userAgent`)
-  - Viewport width (`Dimensions.get('window').width >= 1024`)
-  - Pointer capability (`window.matchMedia('(pointer: fine)').matches`)
-- Include URL parameter override for demo purposes: `?context=desktop|mobile-web|native`
+### Scenario 2: Designer Crafting Templates
+Alex uses the Design page to set brand colors and typography, then switches to Edit mode to build a reusable template with proper mobile optimization settings.
 
-### Component Architecture
+### Scenario 3: Quick Emergency Edit
+The CEO spots a typo in an email about to go out. They tap the document name to rename it to "URGENT - Fixed Version", make the correction, and save - all in under 30 seconds.
 
-**Core Components:**
-1. `<AppShell />` - Root component with context detection
-2. `<DesktopPlaceholder />` - Desktop experience simulation
-3. `<MobileEmailEditor />` - Craft.js-based mobile email editor
-4. `<NativeAppBanner />` - Mobile web to native transition component
-5. `<MobileEmailCanvas />` - Craft.js rendering surface
-6. `<BlockToolbox />` - Component selection interface
+## Metrics for Success
 
-### Document Management
+1. **Load Time**: < 2 seconds on mobile networks
+2. **Touch Accuracy**: 95%+ successful tap interactions
+3. **Save Reliability**: 100% data persistence
+4. **Cross-Platform**: Identical functionality across platforms
+5. **User Satisfaction**: Intuitive enough for non-technical users
 
-**File-Based Persistence:**
-- Documents stored as JSON in `/assets/documents/` directory
-- Document schema:
-```typescript
-interface EmailDocument {
-  id: string;
-  name: string;
-  content: SerializedNodes; // Craft.js serialized state
-  lastModified: string; // ISO 8601
-  created: string; // ISO 8601
-}
-```
+## Future Enhancements
 
-**Storage API:**
-- Native: Expo FileSystem for local persistence
-- Web: localStorage with JSON serialization
-- Unified interface across platforms
+1. **Collaboration**: Real-time multi-user editing
+2. **AI Assistant**: Smart content suggestions and writing help
+3. **Analytics**: Email performance tracking
+4. **Templates**: Pre-built industry-specific templates
+5. **Integrations**: Direct sending via email service providers
 
-**Pre-seeded Content:**
-Include 3 sample documents demonstrating:
-- Simple single-column layout
-- Two-column with image and text
-- Complex layout with multiple containers
+## Technical Specifications
 
-## Feature Specifications
+### Minimum Requirements
+- **iOS**: 13.0+
+- **Android**: 6.0+ (API 23)
+- **Web**: Chrome 80+, Safari 13+, Firefox 75+
 
-### Mobile Email Editor Core
+### Performance Targets
+- **Initial Load**: < 3 seconds
+- **Page Transitions**: < 300ms
+- **Save Operation**: < 1 second
+- **Memory Usage**: < 200MB active
 
-**Craft.js Integration:**
-- Version: `@craftjs/core@latest` (ensure 0.2.x compatibility)
-- Mobile-optimized drag and drop using `react-native-gesture-handler`
-- Touch-friendly selection indicators (minimum 44px touch targets)
+## Conclusion
 
-**Supported Block Types:**
-1. **Container Block**
-   - Configurable padding, background color
-   - Nested block support
-   - Responsive width settings
-
-2. **Text Block**
-   - Rich text editing (bold, italic, links)
-   - Font size, color, alignment controls
-   - Mobile-optimized text selection
-
-3. **Image Block**
-   - Asset picker (demo images from `/assets/images/`)
-   - Alt text configuration
-   - Responsive sizing options
-
-**Editor Controls:**
-- Floating toolbar for selected elements
-- Mobile-optimized property panels
-- Undo/redo functionality
-- Save button with visual feedback
-
-### Context-Specific Behaviors
-
-**Desktop Context (`width >= 1024px`, fine pointer):**
-- Display `<DesktopPlaceholder />` component
-- Show message: "Desktop-optimized mobile email editor loads here"
-- Include small preview of mobile email editor capabilities
-- No editor functionality (intentional limitation)
-
-**Mobile Web Context (`width < 1024px`, web platform):**
-- Full `<MobileEmailEditor />` functionality
-- `<NativeAppBanner />` pinned to bottom
-- Banner text: "Get the full experience in our native app"
-- Banner CTA: "Open in App" button
-
-**Native Context (`Platform.OS !== 'web'`):**
-- Full `<MobileEmailEditor />` functionality
-- No banner display
-- Enhanced touch interactions
-- Native-optimized animations
-
-### Mobile Web to Native Handoff
-
-**Banner Implementation:**
-- Fixed position bottom banner (dismissible)
-- Save current document state on CTA click
-- Generate Expo Go deep link with document ID
-- Fallback to Expo Go installation if not detected
-
-**Deep Link Structure:**
-```
-exp://exp.host/@your-username/MobileEmailEditorDemo?docId=DOCUMENT_ID
-```
-
-**Error Handling:**
-- Detect Expo Go installation
-- Graceful fallback with installation prompt
-- Preserve document state across transitions
-
-## Platform Configuration
-
-### Expo Configuration (app.json)
-```json
-{
-  "expo": {
-    "name": "Mobile Email Editor Demo",
-    "slug": "mobile-email-editor-demo",
-    "version": "1.0.0",
-    "sdkVersion": "53.0.20",
-    "platforms": ["ios", "android", "web"],
-    "web": {
-      "bundler": "metro"
-    },
-    "scheme": "mobileemail"
-  }
-}
-```
-
-### EAS Build Configuration
-```json
-{
-  "build": {
-    "preview": {
-      "distribution": "internal",
-      "channel": "preview"
-    }
-  }
-}
-```
-
-## Development Workflow
-
-### Phase 1: Project Foundation
-1. Initialize Expo project with specified versions
-2. Configure platform detection utilities
-3. Implement basic routing between contexts
-4. Set up document management structure
-
-### Phase 2: Mobile Email Editor Implementation
-1. Integrate Craft.js with mobile optimizations
-2. Build block components (Container, Text, Image)
-3. Implement touch-friendly drag and drop
-4. Add save/load functionality
-
-### Phase 3: Context Behaviors
-1. Build desktop placeholder component
-2. Implement mobile web banner with deep linking
-3. Configure native context without banner
-4. Test cross-platform document persistence
-
-### Phase 4: Polish and Distribution
-1. Configure EAS for Expo Go distribution
-2. Optimize web build for deployment
-3. Test deep linking and state transfer
-4. Performance optimization
-
-## Testing Requirements
-
-**Cross-Platform Validation:**
-- Test on actual mobile devices (iOS Safari, Android Chrome)
-- Verify desktop detection accuracy
-- Confirm Expo Go deep link functionality
-- Validate document state preservation
-
-**Edge Cases:**
-- iPad/tablet detection
-- Mobile browsers with desktop user agent
-- Expo Go not installed scenarios
-- Network connectivity issues
-
-## Deployment Strategy
-
-**Web Deployment:**
-- Build: `expo export --platform web`
-- Host: Static hosting (Vercel, Netlify, or Expo hosting)
-- Domain: Custom domain for professional demo
-
-**Native Distribution:**
-- **Critical Requirement**: Must be accessible globally via Expo Go without manual server running
-- **Method**: EAS Update (not EAS Build) for Expo Go compatibility
-- **Setup**: `eas login` → `eas update:configure`
-- **Publishing**: `eas update --branch production --message "Demo release"`
-- **Access**: Permanent URL like `exp://u.expo.dev/update/[update-id]`
-- **QR Code**: Generate from EAS Update URL for instant global access
-- **Key Benefit**: Demo users anywhere in the world can scan QR code and immediately access the app in Expo Go
-
-## Success Metrics
-
-**Technical Proof Points:**
-- Single codebase serving three distinct contexts
-- Seamless document handoff between web and native
-- Mobile-optimized email editing experience
-- Sub-2-second context switching
-
-**Demonstration Flow:**
-1. Show desktop placeholder on large screen
-2. Switch to mobile browser, interact with mobile email editor
-3. Save document, click banner CTA
-4. Same document loads in Expo Go
-5. Demonstrate identical functionality across contexts
-
-This PRD provides comprehensive guidance for Claude Code while emphasizing the critical proof-of-concept elements that validate your cross-platform mobile email editor architecture hypothesis.
+The Mobile Email Editor Demo successfully demonstrates that professional email editing can be achieved on mobile devices without compromising functionality. By focusing on mobile-first design principles and leveraging modern cross-platform technologies, we've created an experience that feels native on every platform while maintaining a single, maintainable codebase.

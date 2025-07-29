@@ -1,57 +1,123 @@
 # Mobile Email Editor Demo
 
-A cross-platform mobile email editor that demonstrates single codebase serving desktop web, mobile web, and native mobile contexts with real-time cross-device synchronization.
+A professional email editor built specifically for mobile devices, demonstrating how a single React Native codebase can deliver exceptional experiences across iOS, Android, and web platforms.
 
-## Quick Setup
+![Mobile Email Editor Demo](https://img.shields.io/badge/Platform-iOS%20%7C%20Android%20%7C%20Web-blue)
+![Expo SDK](https://img.shields.io/badge/Expo-SDK%2053-000020)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![React Native](https://img.shields.io/badge/React%20Native-0.75-61dafb)
 
-1. **Set up Supabase** (required for cross-device sync): Follow `SUPABASE_SETUP.md`
-2. **Deploy to Snack**: Upload all files to https://snack.expo.dev/
-3. **Update deep link URL**: In `components/NativeAppBanner.tsx`, replace placeholder with your Snack URL
+## 🚀 Live Demo
 
-## Key Changes for Snack Compatibility
+- **Web**: [https://snack.expo.dev/@boottspur/mobile-editor-demo](https://snack.expo.dev/@boottspur/mobile-editor-demo)
+- **Mobile**: Open in Expo Go app using the QR code from the web link
 
-- **Flattened directory structure**: Removed `src/` folder, moved all files to root level
-- **Fixed import paths**: Changed all `@/` aliases to relative paths (`../`, `./`)
-- **JSON to JS conversion**: Converted all `.json` documents to `.js` exports
-- **Removed path aliases**: Updated tsconfig.json to remove path mapping
+## ✨ Features
 
-## Files Structure
+### Three-Page Workflow
+- **Design**: Configure global styles and mobile-specific settings
+- **Edit**: Build emails with intuitive block-based editor
+- **Preview**: See exactly how emails look on mobile and desktop
+
+### Advanced Editor
+- 📝 **8 Block Types**: Text, Image, Button, Divider, Spacer, Video, Product, Container
+- ↩️ **Undo/Redo**: Complete history tracking
+- 📱 **Touch Optimized**: 44px minimum touch targets
+- 💾 **Cloud Sync**: Automatic saving with Supabase
+- 🎨 **Inline Editing**: Tap to edit text and properties
+
+### Mobile-First Design
+- 👆 **Swipe Navigation**: Natural gesture-based page switching
+- 📐 **Responsive Preview**: Toggle between mobile and desktop views
+- 🔄 **Persistent UI**: Header and toolbar stay visible
+- ⚡ **Fast**: Optimized for mobile performance
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React Native + TypeScript
+- **Framework**: Expo SDK 53
+- **Database**: Supabase
+- **Animations**: React Native Reanimated
+- **Gestures**: React Native Gesture Handler
+- **Deployment**: Expo EAS + Vercel
+
+## 📦 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/boottspur/mobile-editor-demo.git
+cd mobile-editor-demo
+
+# Install dependencies
+npm install
+
+# Start development server
+npx expo start
+```
+
+## 🏗️ Project Structure
 
 ```
-/
-├── components/          # React components
-│   ├── blocks/         # Editor block components
-│   ├── AppShell.tsx    # Main app shell with context routing
-│   ├── MobileEmailEditor.tsx  # Core email editor
-│   └── ...
-├── contexts/           # React contexts
-├── utils/             # Utility functions
-├── types.ts           # TypeScript types
-├── assets/            # Documents and sample data
-├── App.tsx            # Entry point
-└── package.json       # Dependencies
+/components         # React Native components
+  /blocks          # Email block components
+  /MobileEmailEditor.tsx  # Main editor component
+  /SwipeableEditor.tsx    # Three-page navigation
+  /PropertyPanel.tsx      # Block property editor
+/contexts          # React contexts
+/types             # TypeScript definitions
+/utils             # Helper functions
+/docs              # Documentation
 ```
 
-## Features
+## 🎯 Key Components
 
-- **Context Detection**: Automatically detects desktop, mobile web, and native contexts
-- **WYSIWYG Email Editor**: Touch-optimized editor with drag-and-drop blocks
-- **Cross-Device Storage**: Real-time document sync via Supabase database
-- **Deep Linking**: Native app banner with Expo Go integration
-- **Block-Based Editor**: Container, Text, and Image blocks with property panels
-- **Offline Fallback**: Works with bundled documents when offline
+### MobileEmailEditor
+The main orchestrator that manages:
+- Document state and persistence
+- Undo/redo history
+- Block selection and editing
+- Page navigation
 
-## Testing the Demo
+### SwipeableEditor
+Handles the three-page workflow:
+- Smooth swipe gestures
+- Page indicators
+- Content transitions
 
-1. **Web Version**: Test in Snack's web preview
-2. **Native Version**: Use "Open on device" in Snack to test in Expo Go
-3. **Context Switching**: Resize browser or add `?context=mobile-web` to URL
-4. **Deep Linking**: Test banner CTA after updating the URL
+### PropertyPanel
+Mobile-optimized property editor:
+- Absolute positioned overlay
+- Touch-friendly inputs
+- Responsive keyboard handling
 
-## Troubleshooting
+## 🚦 Getting Started
 
-- **Import errors**: All imports should use relative paths (`../`, `./`)
-- **Asset loading**: Documents are now JS exports instead of JSON imports
-- **Deep links**: Update the banner URL after publishing to Snack
+1. **Create a Document**: Tap the + button on the document list
+2. **Design**: Swipe to the Design page to set global styles
+3. **Edit**: Add blocks by tapping the floating action button
+4. **Preview**: Swipe to Preview to see your email
+5. **Save**: Changes auto-save to the cloud
 
-This version maintains all the core functionality while being optimized for Snack's constraints.
+## 📱 Platform Support
+
+- **iOS**: 13.0+
+- **Android**: 6.0+ (API 23)
+- **Web**: Modern browsers (Chrome, Safari, Firefox)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Expo](https://expo.dev)
+- UI inspired by Material Design
+- Images from [Unsplash](https://unsplash.com)
+
+---
+
+**Note**: This is a demonstration project showcasing mobile email editing capabilities. For production use, additional features like real email sending, analytics, and team collaboration would be needed.
