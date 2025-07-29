@@ -958,62 +958,64 @@ const EmailEditorContent: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Persistent Toolbar */}
-      <View style={styles.toolbar}>
-        {/* Design/Edit/Preview Toggle */}
-        <View style={styles.pageToggle}>
-          <TouchableOpacity 
-            style={[
-              styles.pageToggleButton,
-              swipePage === 0 && styles.pageToggleButtonActive
-            ]}
-            onPress={() => setSwipePage(0)}
-            activeOpacity={0.7}
-          >
-            <Text style={[
-              styles.pageToggleText,
-              swipePage === 0 && styles.pageToggleTextActive
-            ]}>
-              🎨 Design
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[
-              styles.pageToggleButton,
-              swipePage === 1 && styles.pageToggleButtonActive
-            ]}
-            onPress={() => setSwipePage(1)}
-            activeOpacity={0.7}
-          >
-            <Text style={[
-              styles.pageToggleText,
-              swipePage === 1 && styles.pageToggleTextActive
-            ]}>
-              ✏️ Edit
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[
-              styles.pageToggleButton,
-              swipePage === 2 && styles.pageToggleButtonActive
-            ]}
-            onPress={() => setSwipePage(2)}
-            activeOpacity={0.7}
-          >
-            <Text style={[
-              styles.pageToggleText,
-              swipePage === 2 && styles.pageToggleTextActive
-            ]}>
-              👁️ Preview
-            </Text>
-          </TouchableOpacity>
+      {/* Persistent Toolbar - Two Rows */}
+      <View style={styles.toolbarContainer}>
+        {/* First Row: Design/Edit/Preview Toggle */}
+        <View style={styles.primaryToolbar}>
+          <View style={styles.pageToggle}>
+            <TouchableOpacity 
+              style={[
+                styles.pageToggleButton,
+                swipePage === 0 && styles.pageToggleButtonActive
+              ]}
+              onPress={() => setSwipePage(0)}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.pageToggleText,
+                swipePage === 0 && styles.pageToggleTextActive
+              ]}>
+                🎨 Design
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[
+                styles.pageToggleButton,
+                swipePage === 1 && styles.pageToggleButtonActive
+              ]}
+              onPress={() => setSwipePage(1)}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.pageToggleText,
+                swipePage === 1 && styles.pageToggleTextActive
+              ]}>
+                ✏️ Edit
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[
+                styles.pageToggleButton,
+                swipePage === 2 && styles.pageToggleButtonActive
+              ]}
+              onPress={() => setSwipePage(2)}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.pageToggleText,
+                swipePage === 2 && styles.pageToggleTextActive
+              ]}>
+                👁️ Preview
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Action Buttons - conditional based on current page */}
-        <View style={styles.toolbarActions}>
+        {/* Second Row: Action Buttons */}
+        <View style={styles.secondaryToolbar}>
           {/* Undo/Redo - only show on Edit page */}
           {swipePage === 1 && (
-            <>
+            <View style={styles.undoRedoGroup}>
               <TouchableOpacity 
                 style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
                 disabled={!canUndo}
@@ -1030,7 +1032,7 @@ const EmailEditorContent: React.FC = () => {
               >
                 <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
               </TouchableOpacity>
-            </>
+            </View>
           )}
           
           {/* View Mode Toggle - always visible */}
@@ -1227,15 +1229,27 @@ const styles = StyleSheet.create({
   },
   
   // Toolbar styles
-  toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
+  toolbarContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     backgroundColor: '#f8f9fa',
+  },
+  primaryToolbar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 8,
+    paddingBottom: 6,
+  },
+  secondaryToolbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 2,
+    paddingBottom: 8,
+    minHeight: 44,
   },
   pageToggle: {
     flexDirection: 'row',
@@ -1261,7 +1275,7 @@ const styles = StyleSheet.create({
   pageToggleTextActive: {
     color: '#ffffff',
   },
-  toolbarActions: {
+  undoRedoGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -1293,7 +1307,6 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     height: 36,
     padding: 2,
-    marginLeft: 8,
   },
   viewModeButton: {
     width: 32,
