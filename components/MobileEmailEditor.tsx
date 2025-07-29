@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TextInput,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -52,6 +53,10 @@ const EmailEditorContent: React.FC = () => {
   // Undo/Redo state
   const [history, setHistory] = useState<EmailDocument[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  
+  // Name editing state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editingName, setEditingName] = useState('');
 
   useEffect(() => {
     if (selectedBlockId) {
@@ -577,6 +582,43 @@ const EmailEditorContent: React.FC = () => {
     );
   };
 
+  const handleStartNameEdit = () => {
+    if (!currentDocument) return;
+    setEditingName(currentDocument.name);
+    setIsEditingName(true);
+  };
+
+  const handleFinishNameEdit = async () => {
+    if (!currentDocument || !editingName.trim()) {
+      setIsEditingName(false);
+      return;
+    }
+
+    const updatedDoc = {
+      ...currentDocument,
+      name: editingName.trim(),
+      lastModified: new Date().toISOString(),
+    };
+    
+    setCurrentDocument(updatedDoc);
+    addToHistory(updatedDoc);
+    setIsEditingName(false);
+    setHasChanges(true);
+
+    // Save to storage immediately
+    try {
+      await documentStorage.saveDocument(updatedDoc);
+    } catch (error) {
+      console.error('Error saving document name:', error);
+      // Don't show error to user for name changes, it will be saved later
+    }
+  };
+
+  const handleCancelNameEdit = () => {
+    setIsEditingName(false);
+    setEditingName('');
+  };
+
   const updateDocumentMetadata = (updates: Partial<EmailDocument>) => {
     const newDoc = {
       ...currentDocument,
@@ -966,9 +1008,25 @@ const EmailEditorContent: React.FC = () => {
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title} numberOfLines={1}>
-          {currentDocument.name}
-        </Text>
+        {isEditingName ? (
+          <TextInput
+            style={styles.titleInput}
+            value={editingName}
+            onChangeText={setEditingName}
+            onBlur={handleFinishNameEdit}
+            onSubmitEditing={handleFinishNameEdit}
+            autoFocus
+            selectTextOnFocus
+            returnKeyType="done"
+            blurOnSubmit
+          />
+        ) : (
+          <TouchableOpacity onPress={handleStartNameEdit} style={styles.titleContainer}>
+            <Text style={styles.title} numberOfLines={1}>
+              {currentDocument.name}
+            </Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={handleSave}
           style={styles.saveButton}
@@ -1251,12 +1309,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1976d2',
   },
+  titleContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+    paddingVertical: 4,
+  },
   title: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#333333',
+  },
+  titleInput: {
     flex: 1,
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
     marginHorizontal: 10,
+    color: '#333333',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#1976d2',
   },
   saveButton: {
     padding: 5,
