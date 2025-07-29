@@ -18,36 +18,90 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
         await documentStorage.saveDocument(currentDocument);
       }
 
-      // Generate deep link URL for Expo Snack
-      // UPDATE THIS URL after uploading to Snack!
-      const baseUrl = 'exp://exp.host/@YOUR_SNACK_USERNAME/YOUR_SNACK_ID';
-      const deepLinkUrl = currentDocument 
-        ? `${baseUrl}?docId=${currentDocument.id}`
-        : baseUrl;
-
-      // Try to open in Expo Go
-      console.log('Attempting to open deep link:', deepLinkUrl);
+      // For demo purposes within Snack interface, provide multiple options
+      // This showcases the cross-platform capabilities to engineers
+      const snackBaseUrl = 'https://snack.expo.dev/@boottspur/mobile-editor-demo';
+      
+      // Add query parameters for iOS-specific demo
+      const iosQueryParams = new URLSearchParams({
+        platform: 'ios',
+        supportedPlatforms: 'ios,android,web',
+        // Deep link to editor if we have a document
+        ...(currentDocument && { docId: currentDocument.id })
+      });
+      
+      const iosSnackUrl = `${snackBaseUrl}?${iosQueryParams.toString()}`;
+      
+      console.log('Demo: Switching to iOS preview within Snack');
+      
+      // Show options for engineers to understand the cross-platform demo
+      Alert.alert(
+        '📱 Cross-Platform Demo',
+        'This demonstrates seamless mobile web → native iOS transition. Choose how to experience the iOS version:',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { 
+            text: '🔄 Switch to iOS (Same Tab)', 
+            onPress: () => {
+              // Reload current page with iOS platform parameter
+              if (typeof window !== 'undefined') {
+                window.location.href = iosSnackUrl;
+              }
+            }
+          },
+          { 
+            text: '📱 Open iOS Preview (New Tab)', 
+            onPress: async () => {
+              try {
+                await WebBrowser.openBrowserAsync(iosSnackUrl, {
+                  presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+                  controlsColor: '#1976d2',
+                });
+              } catch (error) {
+                console.error('Error opening iOS preview:', error);
+              }
+            }
+          },
+        ]
+      );
+      
+      return; // Skip the fallback logic since we're handling it above
       
       try {
-        await Linking.openURL(deepLinkUrl);
-      } catch (error) {
-        console.error('Error opening deep link:', error);
-        // Fallback: Show instructions to install Expo Go
-        Alert.alert(
-          'Install Expo Go',
-          'To experience the native version, please install Expo Go from your app store first.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { 
-              text: 'Get Expo Go', 
-              onPress: () => openExpoGoStore() 
-            },
-          ]
-        );
+        // This code is kept for reference but won't execute due to return above
+        console.warn('Fallback code - should not reach here in Snack demo');
+        
+        // Fallback: Traditional Expo Go deep link
+        const expoDeepLink = 'exp://exp.host/@boottspur/mobile-editor-demo';
+        const deepLinkUrl = currentDocument 
+          ? `${expoDeepLink}?docId=${currentDocument.id}`
+          : expoDeepLink;
+          
+        try {
+          await Linking.openURL(deepLinkUrl);
+        } catch (deepLinkError) {
+          console.error('Deep link also failed:', deepLinkError);
+          // Final fallback: Show Expo Go installation instructions
+          Alert.alert(
+            'Experience Our iOS App',
+            'See this demo running natively on iOS! Choose your preferred method:',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { 
+                text: 'View iOS Preview', 
+                onPress: () => WebBrowser.openBrowserAsync(snackUrl.replace('?', '?platform=ios&'))
+              },
+              { 
+                text: 'Install Expo Go', 
+                onPress: () => openExpoGoStore() 
+              },
+            ]
+          );
+        }
       }
     } catch (error) {
       console.error('Error in handleOpenInApp:', error);
-      Alert.alert('Error', 'Unable to open in native app');
+      Alert.alert('Error', 'Unable to open native preview');
     }
   };
 
@@ -83,9 +137,9 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
       </TouchableOpacity>
       
       <View style={styles.content}>
-        <Text style={styles.bannerText}>Get the full experience in our native app</Text>
+        <Text style={styles.bannerText}>📱 See this running natively on iOS!</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={handleOpenInApp}>
-          <Text style={styles.ctaButtonText}>Open in App</Text>
+          <Text style={styles.ctaButtonText}>Try iOS Version</Text>
         </TouchableOpacity>
       </View>
     </View>
