@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  TextInput,
 } from 'react-native';
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
@@ -31,7 +32,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
       setDocuments(docs);
     } catch (error) {
       console.error('Error loading documents:', error);
-      Alert.alert('Error', 'Failed to load documents');
+      Alert.alert('Error', 'Failed to load templates');
     } finally {
       setLoading(false);
     }
@@ -44,7 +45,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
       onSelectDocument(newDoc);
     } catch (error) {
       console.error('Error creating document:', error);
-      Alert.alert('Error', 'Failed to create document');
+      Alert.alert('Error', 'Failed to create template');
     }
   };
 
@@ -74,7 +75,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#1976d2" />
-        <Text style={styles.loadingText}>Loading documents...</Text>
+        <Text style={styles.loadingText}>Loading templates...</Text>
       </View>
     );
   }
@@ -82,10 +83,19 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Email Documents</Text>
+        <Text style={styles.headerTitle}>Templates</Text>
         <TouchableOpacity style={styles.createButton} onPress={handleCreateNew}>
           <Text style={styles.createButtonText}>+ New</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search templates with natural language..."
+          placeholderTextColor="#999"
+          // Non-functional for demo
+        />
       </View>
 
       <FlatList
@@ -96,10 +106,15 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No documents yet</Text>
+            <Text style={styles.emptyText}>No templates yet</Text>
             <TouchableOpacity style={styles.emptyButton} onPress={handleCreateNew}>
               <Text style={styles.emptyButtonText}>Create your first email</Text>
             </TouchableOpacity>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.browseContainer}>
+            <Text style={styles.browseText}>📚 Browse templates</Text>
           </View>
         }
       />
@@ -197,5 +212,29 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  searchContainer: {
+    padding: 20,
+    paddingTop: 0,
+    backgroundColor: '#fff',
+  },
+  searchInput: {
+    height: 44,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 22,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#f8f9fa',
+  },
+  browseContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+  },
+  browseText: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '500',
   },
 });

@@ -34,6 +34,7 @@ import { GlobalStylesEditor } from './GlobalStylesEditor';
 import { ViewModeToggle, ViewMode } from './ViewModeToggle';
 import { ResponsiveView } from './ResponsiveView';
 import { SwipeableEditor } from './SwipeableEditor';
+import { MobileAppFAB } from './MobileAppFAB';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -1274,6 +1275,11 @@ const EmailEditorContent: React.FC = () => {
           />
         ) : null;
       })()}
+
+      {/* Mobile App FAB - Only show in edit mode */}
+      {swipePage === 1 && (
+        <MobileAppFAB currentDocument={currentDocument} />
+      )}
 
       {/* Drag Preview */}
       {/* <DragPreview /> */}

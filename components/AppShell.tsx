@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '../contexts/AppContext';
 import { DesktopPlaceholder } from './DesktopPlaceholder';
 import { MobileEmailEditor } from './MobileEmailEditor';
-import { NativeAppBanner } from './NativeAppBanner';
 import { OnboardingFlow, useOnboarding } from './onboarding/OnboardingFlow';
 
 export const AppShell: React.FC = () => {
@@ -45,7 +44,6 @@ export const AppShell: React.FC = () => {
     return (
       <Container style={containerStyle} edges={isNative ? ['top', 'bottom'] : undefined}>
         <MobileEmailEditor />
-        {isMobileWeb && <NativeAppBanner />}
       </Container>
     );
   }

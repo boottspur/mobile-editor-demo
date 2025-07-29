@@ -102,9 +102,9 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
       </TouchableOpacity>
       
       <View style={styles.content}>
-        <Text style={styles.bannerText}>📱 See this running natively on iOS!</Text>
+        <Text style={styles.bannerText}>📱 Try our mobile app</Text>
         <TouchableOpacity style={styles.ctaButton} onPress={handleOpenInApp}>
-          <Text style={styles.ctaButtonText}>Try iOS Version</Text>
+          <Text style={styles.ctaButtonText}>Get App</Text>
         </TouchableOpacity>
       </View>
     </View>

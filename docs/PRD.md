@@ -2,31 +2,31 @@
 
 ## Executive Summary
 
-This demo showcases a mobile-first email editor component designed to integrate into existing email marketing platforms. The goal is to demonstrate how adding professional mobile editing capabilities can improve user activation, increase free-to-paid conversion, and achieve desktop editor parity on mobile devices.
+This demo showcases a mobile-first email editor component designed to integrate into existing email marketing platforms. The goal is to demonstrate how treating the mobile experience as a user context and not just a technical environment can improve user activation, increase free-to-paid conversion, and achieve desktop editor parity on mobile devices (and all the downstream success inherent in that).
 
-**Important**: This is a demonstration of an editor component, not a standalone app. It would integrate into existing mobile onboarding flows while maintaining current account setup and desktop editor workflows.
+**Important**: This is a demonstration of an editor component. It would integrate into existing mobile contexts while not altering anything before or after the editing experience, and would not change anything about the primary desktop context.
 
 ## Business Goals & Success Metrics
 
-### Primary Goal 1: Improve Time to Value for Mobile Users
+### Primary Goal 1: Improve Time to Value for Mobile Device Onboarding
 **Problem**: Mobile trialers currently hit friction when trying to create emails on mobile, leading to drop-off during onboarding.
 
 **Solution**: Professional mobile editing that enables users to create their first email entirely on mobile within minutes.
 
 **Success Metrics**:
-- Reduce time to first email creation from 15+ minutes to <5 minutes on mobile
-- Increase mobile trial-to-activation rate by 25%
-- Achieve 90%+ mobile task completion rate (vs current ~40%)
+- Reduce time to first email creation from XX+ minutes to XX minutes on mobile
+- Increase mobile trial-to-activation rate by XX%
+- Achieve XX%+ mobile task completion rate (vs current ~XX%)
 
 ### Primary Goal 2: Improve Free-to-Paid Conversion
-**Problem**: Free users who can't access advanced features on mobile don't see the value of paid plans.
+**Problem**: Free users who can't access the full suite of features on mobile may not see the value of paid plans.
 
 **Solution**: Enable key premium features on mobile to demonstrate value during trial period.
 
 **Success Metrics**:
-- Increase mobile free-to-paid conversion by 20%
-- Increase premium feature engagement on mobile by 150%
-- Reduce churn in first 30 days by 15%
+- Increase mobile free-to-paid conversion by XX%
+- Increase premium feature engagement on mobile by XX%
+- Reduce churn in first 30 days by XX%
 
 ### Primary Goal 3: Achieve Desktop Editor Parity
 **Problem**: Mobile users currently have limited editing capabilities, forcing them to switch to desktop.
@@ -36,14 +36,14 @@ This demo showcases a mobile-first email editor component designed to integrate 
 **Success Metrics**:
 - 95% of desktop editor features available on mobile
 - 80% of users can complete their email creation entirely on mobile
-- Mobile session duration increases by 40%
+- Mobile session duration increases by XX%
 
 ## Demo Context & Integration
 
 ### What This Demo Shows
-- **Editor Component Only**: The editing interface that would be embedded in existing mobile apps
+- **Editor Component Only**: The editing interface that would be embedded in existing mobile contexts
 - **Snack-Based**: Live demo accessible via Expo Snack for stakeholder review
-- **Integration Ready**: Designed to plug into current mobile flows without disrupting existing UX
+- **Integration Ready**: Designed to plug into current mobile contexts without disrupting existing surrounding UX
 
 ### What This Demo Doesn't Replace
 - **Account Setup**: Existing registration and onboarding flows remain unchanged
@@ -71,7 +71,7 @@ This demo showcases a mobile-first email editor component designed to integrate 
 #### 2. Block-Based WYSIWYG Editor
 **Maps to**: Desktop Parity + Conversion
 - **8 Block Types**: Text, Image, Button, Divider, Spacer, Video, Product, Container
-- **Touch-Optimized**: 44px minimum targets, gesture-based interactions
+- **Touch-Optimized**: 44px minimum targets, gesture-based interactions, careful use of finicky drag/drop interactions
 - **Professional Output**: Generates same quality HTML as desktop editor
 - **Result**: 95% desktop feature parity, premium users see full value on mobile
 
@@ -98,20 +98,6 @@ This demo showcases a mobile-first email editor component designed to integrate 
 - **Offline Capability**: Continue working without connection
 - **Result**: Seamless workflow between mobile and desktop
 
-## User Journey Improvements
-
-### Current Mobile Trial Experience
-1. Sign up on mobile ❌
-2. Try to create email ❌ (limited mobile editing)
-3. Frustrated, switch to desktop or abandon ❌
-4. Low activation, poor conversion ❌
-
-### Improved Mobile Trial Experience  
-1. Sign up on mobile ✅
-2. Guided to mobile editor component ✅
-3. Create professional email in 3-5 minutes ✅
-4. See premium features in action ✅
-5. High activation, strong conversion signals ✅
 
 ## Technical Implementation
 
@@ -123,7 +109,7 @@ This demo showcases a mobile-first email editor component designed to integrate 
 
 ### Production Integration
 - **Platform**: React Native component in existing mobile apps
-- **Framework**: EAS for production builds and updates
+- **Framework**: Expo + EAS for production builds and updates
 - **Backend**: Integrate with existing user data and email APIs
 - **Distribution**: App store updates with new editor component
 
@@ -140,20 +126,26 @@ This demo showcases a mobile-first email editor component designed to integrate 
 - [ ] Measure activation and conversion impact
 
 ### Phase 3: Full Rollout
-- [ ] Roll out to all mobile users
+- [ ] Roll out to all mobile contexts
 - [ ] Monitor business metrics for 90 days
 - [ ] Achieve target improvements in activation and conversion
 
 ## Competitive Advantage
 
 ### Mobile-First Design
-Unlike competitors who adapt desktop editors for mobile, this is built specifically for touch interfaces, resulting in superior mobile UX.
+Mobile-first users are provided a first-class experience regardless of their mobile context, without compromising the desktop editing experience.
 
 ### Single Codebase Efficiency
 React Native enables faster development cycles and consistent experience across iOS, Android, and web.
 
 ### Integration Flexibility
 Component-based architecture allows seamless integration into existing apps without disrupting current workflows.
+
+## Out of Scope
+- **Desktop contexts**: nothing changes about the desktop experience with this approach
+- **Template/Document System**: This demo does not attempt to recreate existing template/document systems, and would need to be adapted to it in production.
+- **Block editor functionaltiy**: this demo does has *some* data persistence, but it does not attempt to implement real image swapping or other block-specific editing functionality, which would have to be added in production.
+- **Sending**: This demo does not attempt to recreate actual email sending (test or live), nor does it attempt to recreate features like email testing or the litmus / live preview add-on functinoality. It does mock their presence in their applciation, but it does not try to make them work.
 
 ## Risk Mitigation
 
