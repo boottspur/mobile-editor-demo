@@ -15,13 +15,18 @@ interface ResponsiveViewProps {
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
+// Calculate scale factor for desktop view
+const DESKTOP_EMAIL_WIDTH = 600;
+const MOBILE_CONTENT_WIDTH = screenWidth - 40; // Account for padding
+const DESKTOP_SCALE = Math.min(DESKTOP_EMAIL_WIDTH / MOBILE_CONTENT_WIDTH, 1.2);
+
 export const ResponsiveView: React.FC<ResponsiveViewProps> = ({
   viewMode,
   children,
   style,
 }) => {
   if (viewMode === 'desktop') {
-    // Desktop view: centered with max width, simulating desktop email client
+    // Desktop view: scaled content in email client simulation
     return (
       <View style={[styles.desktopContainer, style]}>
         <ScrollView 
@@ -32,7 +37,16 @@ export const ResponsiveView: React.FC<ResponsiveViewProps> = ({
         >
           <View style={styles.desktopEmailWrapper}>
             <View style={styles.desktopEmail}>
-              {children}
+              <View style={[
+                styles.scaledContent,
+                {
+                  transform: [{ scale: DESKTOP_SCALE }],
+                  width: MOBILE_CONTENT_WIDTH,
+                  minHeight: 400 / DESKTOP_SCALE, // Ensure minimum height
+                }
+              ]}>
+                {children}
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -63,24 +77,24 @@ const styles = StyleSheet.create({
   },
   desktopContainer: {
     flex: 1,
-    backgroundColor: '#f0f0f0', // Simulates desktop email client background
+    backgroundColor: '#f5f5f5', // Simulates desktop email client background
   },
   desktopScrollView: {
     flex: 1,
   },
   desktopContent: {
-    paddingVertical: 20,
+    paddingVertical: 30,
     alignItems: 'center',
-    minHeight: screenHeight - 200, // Account for headers
+    minHeight: screenHeight - 150, // Account for headers
   },
   desktopEmailWrapper: {
     width: '100%',
-    maxWidth: 600, // Standard email width
+    maxWidth: DESKTOP_EMAIL_WIDTH + 40, // Email width + padding
     paddingHorizontal: 20,
   },
   desktopEmail: {
     backgroundColor: '#ffffff',
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e0e0e0',
     overflow: 'hidden',
@@ -88,10 +102,19 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    // Center the scaled content
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  scaledContent: {
+    // Transform origin should be top-left for proper scaling
+    transformOrigin: 'top left',
+    // Ensure content is centered after scaling
+    alignSelf: 'center',
   },
 });
