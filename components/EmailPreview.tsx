@@ -101,7 +101,9 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
       key={column.id}
       style={[
         styles.column,
-        { width: `${column.width}%` }
+        viewMode === 'mobile' 
+          ? { width: '100%' } // Stack columns on mobile
+          : { width: `${column.width}%` } // Use column widths on desktop
       ]}
     >
       {column.blocks.map(renderBlock)}
@@ -116,7 +118,10 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
         layout.backgroundColor && { backgroundColor: layout.backgroundColor }
       ]}
     >
-      <View style={styles.layoutColumns}>
+      <View style={[
+        styles.layoutColumns,
+        viewMode === 'mobile' && styles.layoutColumnsMobile
+      ]}>
         {layout.columns.map(renderColumn)}
       </View>
     </View>
@@ -137,11 +142,6 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
             <Text style={styles.fromText}>From: {document.fromName}</Text>
             <Text style={styles.emailText}>&lt;{document.fromEmail}&gt;</Text>
           </View>
-          {onBack && (
-            <TouchableOpacity style={styles.backButton} onPress={onBack}>
-              <Text style={styles.backButtonText}>Edit</Text>
-            </TouchableOpacity>
-          )}
         </View>
         
         <Text style={styles.subjectText}>{document.subject}</Text>
@@ -235,17 +235,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666666',
   },
-  backButton: {
-    backgroundColor: '#1976d2',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  backButtonText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
   subjectText: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -291,6 +280,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  layoutColumnsMobile: {
+    flexDirection: 'column',
   },
   column: {
     paddingHorizontal: 4,

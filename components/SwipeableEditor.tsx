@@ -221,41 +221,6 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
         </Animated.View>
       </GestureDetector>
 
-      {/* Swipe Hints - Hidden on web to prevent layout issues */}
-      {Platform.OS !== 'web' && currentPage === 0 && (
-        <View style={styles.swipeHintRight}>
-          <View style={styles.swipeHintContent}>
-            <Text style={styles.swipeHintText}>✏️</Text>
-            <Text style={styles.swipeHintLabel}>Edit</Text>
-          </View>
-        </View>
-      )}
-
-      {Platform.OS !== 'web' && currentPage === 1 && (
-        <>
-          <View style={styles.swipeHintLeft}>
-            <View style={styles.swipeHintContent}>
-              <Text style={styles.swipeHintText}>🎨</Text>
-              <Text style={styles.swipeHintLabel}>Design</Text>
-            </View>
-          </View>
-          <View style={styles.swipeHintRight}>
-            <View style={styles.swipeHintContent}>
-              <Text style={styles.swipeHintText}>👁️</Text>
-              <Text style={styles.swipeHintLabel}>Preview</Text>
-            </View>
-          </View>
-        </>
-      )}
-
-      {Platform.OS !== 'web' && currentPage === 2 && (
-        <View style={styles.swipeHintLeft}>
-          <View style={styles.swipeHintContent}>
-            <Text style={styles.swipeHintText}>✏️</Text>
-            <Text style={styles.swipeHintLabel}>Edit</Text>
-          </View>
-        </View>
-      )}
     </GestureHandlerRootView>
   );
 };
@@ -315,54 +280,5 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
     width: screenWidth,
-  },
-  
-  // Swipe Hints
-  swipeHintRight: {
-    position: 'absolute',
-    right: 0,
-    top: '50%',
-    transform: [{ translateY: -30 }],
-    backgroundColor: 'rgba(25, 118, 210, 0.9)',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  swipeHintLeft: {
-    position: 'absolute',
-    left: 0,
-    top: '50%',
-    transform: [{ translateY: -30 }],
-    backgroundColor: 'rgba(25, 118, 210, 0.9)',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderTopRightRadius: 12,
-    borderBottomRightRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  swipeHintContent: {
-    alignItems: 'center',
-    minWidth: 32,
-  },
-  swipeHintText: {
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  swipeHintLabel: {
-    fontSize: 10,
-    color: '#ffffff',
-    fontWeight: '600',
-    textAlign: 'center',
-    transform: [{ rotate: '90deg' }],
   },
 });
