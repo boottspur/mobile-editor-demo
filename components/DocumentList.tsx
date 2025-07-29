@@ -64,7 +64,9 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
     >
       <Text style={styles.documentTitle}>{item.name}</Text>
       <Text style={styles.documentDate}>Modified: {formatDate(item.lastModified)}</Text>
-      <Text style={styles.documentBlocks}>{item.content.length} blocks</Text>
+      <Text style={styles.documentBlocks}>
+        {item.sections?.length || 0} section{(item.sections?.length || 0) !== 1 ? 's' : ''}
+      </Text>
     </TouchableOpacity>
   );
 

@@ -1,5 +1,6 @@
 import { EmailDocument } from '../types';
 import { supabase } from './supabase';
+import { migrateDocument } from './documentMigration';
 
 // Import bundled documents (as fallback templates)
 import simpleLayout from '../assets/documents/simple-layout.js';
@@ -32,7 +33,8 @@ class DocumentStorageService {
       if (!existingDocs || existingDocs.length === 0) {
         console.log('📚 Seeding Supabase with bundled documents...');
         for (const doc of this.bundledDocuments) {
-          await this.saveDocument(doc);
+          const migratedDoc = migrateDocument(doc);
+          await this.saveDocument(migratedDoc);
         }
         console.log('✅ Seeded Supabase with', this.bundledDocuments.length, 'documents');
       } else {
@@ -54,28 +56,38 @@ class DocumentStorageService {
 
       if (error) {
         console.warn('⚠️ Error fetching from Supabase:', error.message);
-        return this.bundledDocuments;
+        return this.bundledDocuments.map(doc => migrateDocument(doc));
       }
 
       if (!data || data.length === 0) {
         console.log('📄 No documents in Supabase, returning bundled documents');
-        return this.bundledDocuments;
+        return this.bundledDocuments.map(doc => migrateDocument(doc));
       }
 
-      // Convert Supabase format to EmailDocument format
-      const documents: EmailDocument[] = data.map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        content: doc.content,
-        created: doc.created,
-        lastModified: doc.last_modified,
-      }));
+      // Convert Supabase format to EmailDocument format and migrate
+      const documents: EmailDocument[] = data.map(doc => {
+        const rawDocument = {
+          id: doc.id,
+          name: doc.name,
+          content: doc.content, // This might be old format
+          sections: doc.sections, // This might be new format
+          fromName: doc.from_name,
+          fromEmail: doc.from_email,
+          replyToEmail: doc.reply_to_email,
+          subject: doc.subject,
+          preheader: doc.preheader,
+          globalStyles: doc.global_styles,
+          created: doc.created,
+          lastModified: doc.last_modified,
+        };
+        return migrateDocument(rawDocument);
+      });
 
       console.log('✅ Fetched', documents.length, 'documents from Supabase');
       return documents;
     } catch (error) {
       console.warn('⚠️ Failed to fetch documents from Supabase:', error);
-      return this.bundledDocuments;
+      return this.bundledDocuments.map(doc => migrateDocument(doc));
     }
   }
 
@@ -94,26 +106,37 @@ class DocumentStorageService {
         return this.bundledDocuments.find(doc => doc.id === id) || null;
       }
 
-      const document: EmailDocument = {
+      // Migrate document from database format to current format
+      const rawDocument = {
         id: data.id,
         name: data.name,
-        content: data.content,
+        content: data.content, // This might be old format
+        sections: data.sections, // This might be new format
+        fromName: data.from_name,
+        fromEmail: data.from_email,
+        replyToEmail: data.reply_to_email,
+        subject: data.subject,
+        preheader: data.preheader,
+        globalStyles: data.global_styles,
         created: data.created,
         lastModified: data.last_modified,
       };
+      
+      const document = migrateDocument(rawDocument);
 
       console.log('✅ Fetched document:', document.name);
       return document;
     } catch (error) {
       console.warn('⚠️ Failed to fetch document from Supabase:', error);
-      return this.bundledDocuments.find(doc => doc.id === id) || null;
+      const bundledDoc = this.bundledDocuments.find(doc => doc.id === id);
+      return bundledDoc ? migrateDocument(bundledDoc) : null;
     }
   }
 
   async saveDocument(document: EmailDocument): Promise<void> {
     try {
       console.log('💾 Saving document to Supabase:', document.id, document.name);
-      console.log('📝 Document content blocks:', document.content.length);
+      console.log('📝 Document sections:', document.sections.length);
       
       const now = new Date().toISOString();
       document.lastModified = now;
@@ -122,7 +145,13 @@ class DocumentStorageService {
       const supabaseDoc = {
         id: document.id,
         name: document.name,
-        content: document.content,
+        sections: document.sections,
+        from_name: document.fromName,
+        from_email: document.fromEmail,
+        reply_to_email: document.replyToEmail,
+        subject: document.subject,
+        preheader: document.preheader,
+        global_styles: document.globalStyles,
         created: document.created || now,
         last_modified: now,
       };
@@ -150,7 +179,33 @@ class DocumentStorageService {
     const newDocument: EmailDocument = {
       id: `doc-${Date.now()}`,
       name,
-      content: [],
+      fromName: 'Your Name',
+      fromEmail: 'hello@example.com',
+      replyToEmail: 'hello@example.com',
+      subject: 'Email Subject',
+      preheader: 'Email preview text...',
+      sections: [{
+        id: `section-${Date.now()}`,
+        name: 'Main Content',
+        layouts: [{
+          id: `layout-${Date.now()}`,
+          columns: [{
+            id: `column-${Date.now()}`,
+            width: 100,
+            blocks: [],
+          }],
+          backgroundColor: '#ffffff',
+          isDynamic: false,
+        }],
+      }],
+      globalStyles: {
+        bodyBackgroundColor: '#f5f5f5',
+        fontFamily: 'Arial, sans-serif',
+        fontSize: 16,
+        textColor: '#333333',
+        linkColor: '#1976d2',
+        headingColor: '#000000',
+      },
       created: new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };

@@ -10,9 +10,48 @@ export interface ContextDetection {
 export interface EmailDocument {
   id: string;
   name: string;
-  content: BlockNode[];
+  // Email metadata
+  fromName?: string;
+  fromEmail?: string;
+  replyToEmail?: string;
+  subject?: string;
+  preheader?: string;
+  // Document structure
+  sections: Section[];
+  // Global styles
+  globalStyles?: GlobalStyles;
   lastModified: string;
   created: string;
+}
+
+export interface GlobalStyles {
+  bodyBackgroundColor?: string;
+  bodyBackgroundImage?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  textColor?: string;
+  linkColor?: string;
+  headingColor?: string;
+}
+
+export interface Section {
+  id: string;
+  name?: string;
+  layouts: Layout[];
+}
+
+export interface Layout {
+  id: string;
+  columns: Column[];
+  backgroundColor?: string;
+  isDynamic?: boolean;
+  mobileOrder?: number[]; // Column order for mobile view
+}
+
+export interface Column {
+  id: string;
+  width: number; // Percentage width (e.g., 50 for 50%)
+  blocks: BlockNode[];
 }
 
 export type BlockType = 
