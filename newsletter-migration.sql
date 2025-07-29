@@ -135,7 +135,7 @@ INSERT INTO documents (
                   "id": "image-hero",
                   "type": "image",
                   "props": {
-                    "src": "https://via.placeholder.com/300x200/1976d2/ffffff?text=AI+GPT-5",
+                    "src": "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=200&fit=crop",
                     "alt": "AI GPT-5 Illustration",
                     "width": "100%",
                     "height": "auto"
@@ -164,7 +164,7 @@ INSERT INTO documents (
                   "id": "image-news-1",
                   "type": "image",
                   "props": {
-                    "src": "https://via.placeholder.com/250x150/28a745/ffffff?text=Mobile+5G",
+                    "src": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=250&h=150&fit=crop",
                     "alt": "5G Technology",
                     "width": "100%",
                     "height": "auto"
@@ -202,7 +202,7 @@ INSERT INTO documents (
                   "id": "image-news-2",
                   "type": "image",
                   "props": {
-                    "src": "https://via.placeholder.com/250x150/ff5722/ffffff?text=Quantum+Computing",
+                    "src": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=250&h=150&fit=crop",
                     "alt": "Quantum Computing",
                     "width": "100%",
                     "height": "auto"
@@ -240,7 +240,7 @@ INSERT INTO documents (
                   "id": "image-news-3",
                   "type": "image",
                   "props": {
-                    "src": "https://via.placeholder.com/250x150/9c27b0/ffffff?text=AR+VR",
+                    "src": "https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=250&h=150&fit=crop",
                     "alt": "AR/VR Technology",
                     "width": "100%",
                     "height": "auto"
@@ -477,7 +477,7 @@ INSERT INTO documents (
                   "id": "image-hero-collection",
                   "type": "image",
                   "props": {
-                    "src": "https://via.placeholder.com/400x300/ffc0cb/ffffff?text=Spring+Collection",
+                    "src": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
                     "alt": "Spring Collection Hero",
                     "width": "100%",
                     "height": "auto"
@@ -547,7 +547,7 @@ INSERT INTO documents (
                   "type": "product",
                   "props": {
                     "name": "Floral Midi Dress",
-                    "image": "https://via.placeholder.com/250x300/98d982/ffffff?text=Floral+Dress",
+                    "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=250&h=300&fit=crop",
                     "price": "$89.99",
                     "description": "Elegant floral print midi dress perfect for spring occasions",
                     "buyUrl": "#",
@@ -565,7 +565,7 @@ INSERT INTO documents (
                   "type": "product",
                   "props": {
                     "name": "Sustainable Denim Jacket",
-                    "image": "https://via.placeholder.com/250x300/87ceeb/ffffff?text=Denim+Jacket",
+                    "image": "https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=250&h=300&fit=crop",
                     "price": "$124.99",
                     "description": "Eco-friendly denim jacket made from recycled materials",
                     "buyUrl": "#",
@@ -583,7 +583,7 @@ INSERT INTO documents (
                   "type": "product",
                   "props": {
                     "name": "Statement Earrings",
-                    "image": "https://via.placeholder.com/250x300/dda0dd/ffffff?text=Earrings",
+                    "image": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=250&h=300&fit=crop",
                     "price": "$34.99",
                     "description": "Bold geometric earrings to complete any outfit",
                     "buyUrl": "#",

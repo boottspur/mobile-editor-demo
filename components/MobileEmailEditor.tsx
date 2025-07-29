@@ -294,7 +294,7 @@ const EmailEditorContent: React.FC = () => {
         };
       case 'image':
         return {
-          src: 'https://via.placeholder.com/300x200',
+          src: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=200&fit=crop',
           alt: 'Image',
           width: '100%',
           height: 'auto',
@@ -321,7 +321,7 @@ const EmailEditorContent: React.FC = () => {
       case 'video':
         return {
           src: 'https://example.com/video.mp4',
-          thumbnail: 'https://via.placeholder.com/600x338',
+          thumbnail: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=600&h=338&fit=crop',
           title: 'Video Title',
           autoplay: false,
           controls: true,
@@ -386,7 +386,7 @@ const EmailEditorContent: React.FC = () => {
       case 'product':
         return {
           name: 'Product Name',
-          image: 'https://via.placeholder.com/300x300',
+          image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop',
           price: '$99.99',
           description: 'Product description goes here...',
           buyUrl: 'https://example.com/buy',
