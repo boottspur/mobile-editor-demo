@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { EmailDocument, BlockNode, BlockType, Section, Layout, Column } from '../types';
+import { OnboardingData } from './ai/AIOnboardingAssistant';
 import { documentStorage } from '../utils/documentStorage';
 import { useDeepLink } from '../contexts/DeepLinkContext';
 import { migrateDocument } from '../utils/documentMigration';
@@ -37,7 +38,11 @@ import { SwipeableEditor } from './SwipeableEditor';
 import { MobileAppFAB } from './MobileAppFAB';
 import { TextVersionView } from './TextVersionView';
 
-const EmailEditorContent: React.FC = () => {
+interface EmailEditorContentProps {
+  onboardingData?: OnboardingData | null;
+}
+
+const EmailEditorContent: React.FC<EmailEditorContentProps> = ({ onboardingData }) => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
   const { pendingDocument, clearPendingDocument } = useDeepLink();
   const [currentDocument, setCurrentDocument] = useState<EmailDocument | null>(null);
@@ -521,7 +526,7 @@ const EmailEditorContent: React.FC = () => {
   };
 
   if (!currentDocument) {
-    return <DocumentList onSelectDocument={handleSelectDocument} />;
+    return <DocumentList onSelectDocument={handleSelectDocument} onboardingData={onboardingData} />;
   }
 
   // Find selected block in the new structure
@@ -1310,8 +1315,12 @@ const EmailEditorContent: React.FC = () => {
   );
 };
 
-export const MobileEmailEditor: React.FC = () => {
-  return <EmailEditorContent />;
+interface MobileEmailEditorProps {
+  onboardingData?: OnboardingData | null;
+}
+
+export const MobileEmailEditor: React.FC<MobileEmailEditorProps> = ({ onboardingData }) => {
+  return <EmailEditorContent onboardingData={onboardingData} />;
 };
 
 const styles = StyleSheet.create({

@@ -75,6 +75,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <Text style={styles.subtitle}>
           Hi {userData.name?.split(' ')[0] || 'there'}! Your account has been created successfully.
         </Text>
+        <Text style={styles.nextStepText}>
+          Next, I'll help you set up your first marketing campaign with our AI assistant! 🤖
+        </Text>
 
         {/* Account Details */}
         <View style={styles.accountDetails}>
@@ -140,11 +143,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             onPress={onContinue}
             activeOpacity={0.8}
           >
-            <Text style={styles.continueButtonText}>Start Creating →</Text>
+            <Text style={styles.continueButtonText}>Meet Your AI Assistant →</Text>
           </TouchableOpacity>
           
           <Text style={styles.autoText}>
-            Continuing automatically in a few seconds...
+            Starting AI setup in a few seconds...
           </Text>
         </Animated.View>
       </Animated.View>
@@ -187,7 +190,15 @@ const styles = StyleSheet.create({
     color: '#666666',
     textAlign: 'center',
     lineHeight: 24,
+    marginBottom: 16,
+  },
+  nextStepText: {
+    fontSize: 15,
+    color: '#1976d2',
+    textAlign: 'center',
+    lineHeight: 22,
     marginBottom: 32,
+    fontWeight: '500',
   },
   
   // Account Details

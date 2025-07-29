@@ -5,10 +5,12 @@ import { useAppContext } from '../contexts/AppContext';
 import { DesktopPlaceholder } from './DesktopPlaceholder';
 import { MobileEmailEditor } from './MobileEmailEditor';
 import { OnboardingFlow, useOnboarding } from './onboarding/OnboardingFlow';
+import { OnboardingData } from './ai/AIOnboardingAssistant';
 
 export const AppShell: React.FC = () => {
   const { context, isDesktop, isMobileWeb, isNative } = useAppContext();
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding();
+  const [onboardingData, setOnboardingData] = React.useState<OnboardingData | null>(null);
 
   // Show desktop placeholder for desktop context
   if (isDesktop) {
@@ -26,7 +28,12 @@ export const AppShell: React.FC = () => {
     return (
       <Container style={containerStyle} edges={isNative ? ['top', 'bottom'] : undefined}>
         <OnboardingFlow 
-          onComplete={completeOnboarding}
+          onComplete={(data) => {
+            if (data) {
+              setOnboardingData(data);
+            }
+            completeOnboarding();
+          }}
           onSkipToEditor={skipOnboarding}
         />
       </Container>
@@ -43,7 +50,7 @@ export const AppShell: React.FC = () => {
     
     return (
       <Container style={containerStyle} edges={isNative ? ['top', 'bottom'] : undefined}>
-        <MobileEmailEditor />
+        <MobileEmailEditor onboardingData={onboardingData} />
       </Container>
     );
   }

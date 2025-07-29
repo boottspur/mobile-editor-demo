@@ -1,6 +1,7 @@
 // AI Components Barrel Export
 export { AIAssistant } from './AIAssistant';
 export { AIOnboardingScreen } from './AIOnboardingScreen';
+export { AIOnboardingAssistant } from './AIOnboardingAssistant';
 
 // Types
 export type { 
@@ -9,3 +10,7 @@ export type {
   ChatMessage, 
   UserAction 
 } from './AIAssistant';
+
+export type {
+  OnboardingData
+} from './AIOnboardingAssistant';

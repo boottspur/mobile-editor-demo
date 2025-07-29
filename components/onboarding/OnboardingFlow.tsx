@@ -3,11 +3,12 @@ import { View, StyleSheet } from 'react-native';
 import { LandingPage } from './LandingPage';
 import { AccountSetup } from './AccountSetup';
 import { WelcomeScreen } from './WelcomeScreen';
+import { AIOnboardingAssistant, OnboardingData } from '../ai/AIOnboardingAssistant';
 
-export type OnboardingStep = 'landing' | 'account-setup' | 'welcome' | 'complete';
+export type OnboardingStep = 'landing' | 'account-setup' | 'welcome' | 'ai-discovery' | 'complete';
 
 interface OnboardingFlowProps {
-  onComplete: () => void;
+  onComplete: (onboardingData?: OnboardingData) => void;
   onSkipToEditor: () => void;
 }
 
@@ -17,23 +18,41 @@ interface UserData {
   company: string;
 }
 
+interface AppState {
+  userData: UserData | null;
+  onboardingData: OnboardingData | null;
+}
+
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   onComplete,
   onSkipToEditor,
 }) => {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('landing');
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [appState, setAppState] = useState<AppState>({
+    userData: null,
+    onboardingData: null,
+  });
 
   const handleStartTrial = () => {
     setCurrentStep('account-setup');
   };
 
   const handleAccountSetupComplete = (data: UserData) => {
-    setUserData(data);
+    setAppState(prev => ({ ...prev, userData: data }));
     setCurrentStep('welcome');
   };
 
   const handleWelcomeComplete = () => {
+    setCurrentStep('ai-discovery');
+  };
+
+  const handleAIDiscoveryComplete = (onboardingData: OnboardingData) => {
+    setAppState(prev => ({ ...prev, onboardingData }));
+    setCurrentStep('complete');
+    onComplete(onboardingData);
+  };
+
+  const handleSkipAIDiscovery = () => {
     setCurrentStep('complete');
     onComplete();
   };
@@ -64,9 +83,20 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       case 'welcome':
         return (
           <WelcomeScreen
-            userData={userData!}
+            userData={appState.userData!}
             onContinue={handleWelcomeComplete}
           />
+        );
+
+      case 'ai-discovery':
+        return (
+          <View style={styles.aiDiscoveryContainer}>
+            <AIOnboardingAssistant
+              userData={appState.userData!}
+              onComplete={handleAIDiscoveryComplete}
+              isVisible={true}
+            />
+          </View>
         );
 
       default:
@@ -113,5 +143,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  aiDiscoveryContainer: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'flex-end',
   },
 });

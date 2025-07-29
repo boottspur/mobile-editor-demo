@@ -13,12 +13,14 @@ import {
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
 import { AIOnboardingScreen } from './ai/AIOnboardingScreen';
+import { OnboardingData } from './ai/AIOnboardingAssistant';
 
 interface DocumentListProps {
   onSelectDocument: (document: EmailDocument) => void;
+  onboardingData?: OnboardingData | null;
 }
 
-export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) => {
+export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument, onboardingData }) => {
   const [documents, setDocuments] = useState<EmailDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBrowseModal, setShowBrowseModal] = useState(false);
