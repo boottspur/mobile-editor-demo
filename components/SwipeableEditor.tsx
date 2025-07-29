@@ -21,6 +21,7 @@ import {
 } from 'react-native-gesture-handler';
 import { EmailDocument } from '../types';
 import { EmailPreview } from './EmailPreview';
+import { GlobalStylesEditor } from './GlobalStylesEditor';
 
 interface SwipeableEditorProps {
   document: EmailDocument | null;
@@ -28,6 +29,7 @@ interface SwipeableEditorProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   viewMode?: 'mobile' | 'desktop';
+  onUpdateGlobalStyles?: (globalStyles: import('../types').GlobalStyles) => void;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -39,6 +41,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   currentPage: externalPage,
   onPageChange,
   viewMode = 'mobile',
+  onUpdateGlobalStyles,
 }) => {
   const [internalPage, setInternalPage] = useState(0);
   const currentPage = externalPage !== undefined ? externalPage : internalPage;
@@ -57,17 +60,17 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
     .failOffsetY([-15, 15]) // Fail if vertical movement exceeds 15px
     .onStart(() => {
       // Store the current offset when gesture starts
-      translateX.value = currentPage === 0 ? 0 : -screenWidth;
+      translateX.value = currentPage * -screenWidth;
     })
     .onUpdate((event) => {
-      const baseOffset = currentPage === 0 ? 0 : -screenWidth;
+      const baseOffset = currentPage * -screenWidth;
       
       // Limit swipe based on current page
       if (currentPage === 0 && event.translationX > 0) {
-        // On first page, can't swipe right
+        // On first page (Design), can't swipe right
         translateX.value = baseOffset + event.translationX * 0.1; // Rubber band effect
-      } else if (currentPage === 1 && event.translationX < 0) {
-        // On last page, can't swipe left
+      } else if (currentPage === 2 && event.translationX < 0) {
+        // On last page (Preview), can't swipe left
         translateX.value = baseOffset + event.translationX * 0.1; // Rubber band effect
       } else {
         translateX.value = baseOffset + event.translationX;
@@ -77,47 +80,49 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
       const shouldSwitchPage = Math.abs(event.translationX) > SWIPE_THRESHOLD;
       
       if (shouldSwitchPage) {
-        if (event.translationX < 0 && currentPage === 0 && document) {
-          // Swipe left - go to preview
-          translateX.value = withSpring(-screenWidth, {
+        if (event.translationX < 0 && currentPage < 2) {
+          // Swipe left - go to next page
+          const nextPage = currentPage + 1;
+          translateX.value = withSpring(nextPage * -screenWidth, {
             damping: 20,
             stiffness: 150,
           }, (finished) => {
             if (finished) {
-              runOnJS(updatePage)(1);
+              runOnJS(updatePage)(nextPage);
             }
           });
-        } else if (event.translationX > 0 && currentPage === 1) {
-          // Swipe right - go to editor
-          translateX.value = withSpring(0, {
+        } else if (event.translationX > 0 && currentPage > 0) {
+          // Swipe right - go to previous page
+          const prevPage = currentPage - 1;
+          translateX.value = withSpring(prevPage * -screenWidth, {
             damping: 20,
             stiffness: 150,
           }, (finished) => {
             if (finished) {
-              runOnJS(updatePage)(0);
+              runOnJS(updatePage)(prevPage);
             }
           });
         } else {
           // Spring back
-          translateX.value = withSpring(currentPage === 0 ? 0 : -screenWidth);
+          translateX.value = withSpring(currentPage * -screenWidth);
         }
       } else {
         // Spring back to current page
-        translateX.value = withSpring(currentPage === 0 ? 0 : -screenWidth);
+        translateX.value = withSpring(currentPage * -screenWidth);
       }
     });
 
   // Effect to handle external page changes
   React.useEffect(() => {
     if (externalPage !== undefined) {
-      translateX.value = withSpring(externalPage === 0 ? 0 : -screenWidth, {
+      translateX.value = withSpring(externalPage * -screenWidth, {
         damping: 20,
         stiffness: 150,
       });
     }
   }, [externalPage]);
 
-  const switchToEdit = () => {
+  const switchToDesign = () => {
     translateX.value = withSpring(0, {
       damping: 20,
       stiffness: 150,
@@ -128,14 +133,25 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
     });
   };
 
+  const switchToEdit = () => {
+    translateX.value = withSpring(-screenWidth, {
+      damping: 20,
+      stiffness: 150,
+    }, (finished) => {
+      if (finished) {
+        runOnJS(updatePage)(1);
+      }
+    });
+  };
+
   const switchToPreview = () => {
     if (document) {
-      translateX.value = withSpring(-screenWidth, {
+      translateX.value = withSpring(-2 * screenWidth, {
         damping: 20,
         stiffness: 150,
       }, (finished) => {
         if (finished) {
-          runOnJS(updatePage)(1);
+          runOnJS(updatePage)(2);
         }
       });
     }
@@ -150,8 +166,8 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   const indicatorStyle = useAnimatedStyle(() => {
     const position = interpolate(
       translateX.value,
-      [0, -screenWidth],
-      [0, screenWidth / 2]
+      [0, -screenWidth, -2 * screenWidth],
+      [0, screenWidth / 3, (2 * screenWidth) / 3]
     );
     return {
       transform: [{ translateX: position }],
@@ -168,12 +184,30 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
       {/* Swipeable Content */}
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.pagesContainer, animatedStyle]}>
-          {/* Page 0: Editor */}
+          {/* Page 0: Design (Global Styles) */}
+          <View style={styles.page}>
+            <GlobalStylesEditor
+              visible={true}
+              onClose={() => {}} // No close needed - part of navigation
+              globalStyles={document?.globalStyles || {
+                bodyBackgroundColor: '#f5f5f5',
+                fontFamily: 'Arial, sans-serif',
+                fontSize: 16,
+                textColor: '#333333',
+                linkColor: '#1976d2',
+                headingColor: '#000000',
+              }}
+              onUpdate={onUpdateGlobalStyles || (() => {})}
+              isInline={true}
+            />
+          </View>
+
+          {/* Page 1: Edit */}
           <View style={styles.page}>
             {children}
           </View>
 
-          {/* Page 1: Preview */}
+          {/* Page 2: Preview */}
           <View style={styles.page}>
             <EmailPreview 
               document={document} 
@@ -188,13 +222,30 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
       {Platform.OS !== 'web' && currentPage === 0 && (
         <View style={styles.swipeHintRight}>
           <View style={styles.swipeHintContent}>
-            <Text style={styles.swipeHintText}>👁️</Text>
-            <Text style={styles.swipeHintLabel}>Preview</Text>
+            <Text style={styles.swipeHintText}>✏️</Text>
+            <Text style={styles.swipeHintLabel}>Edit</Text>
           </View>
         </View>
       )}
 
       {Platform.OS !== 'web' && currentPage === 1 && (
+        <>
+          <View style={styles.swipeHintLeft}>
+            <View style={styles.swipeHintContent}>
+              <Text style={styles.swipeHintText}>🎨</Text>
+              <Text style={styles.swipeHintLabel}>Design</Text>
+            </View>
+          </View>
+          <View style={styles.swipeHintRight}>
+            <View style={styles.swipeHintContent}>
+              <Text style={styles.swipeHintText}>👁️</Text>
+              <Text style={styles.swipeHintLabel}>Preview</Text>
+            </View>
+          </View>
+        </>
+      )}
+
+      {Platform.OS !== 'web' && currentPage === 2 && (
         <View style={styles.swipeHintLeft}>
           <View style={styles.swipeHintContent}>
             <Text style={styles.swipeHintText}>✏️</Text>
@@ -256,7 +307,7 @@ const styles = StyleSheet.create({
   pagesContainer: {
     flex: 1,
     flexDirection: 'row',
-    width: screenWidth * 2,
+    width: screenWidth * 3,
   },
   page: {
     flex: 1,

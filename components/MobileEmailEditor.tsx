@@ -33,7 +33,6 @@ import { GlobalStylesEditor } from './GlobalStylesEditor';
 import { ViewModeToggle, ViewMode } from './ViewModeToggle';
 import { ResponsiveView } from './ResponsiveView';
 import { SwipeableEditor } from './SwipeableEditor';
-import { StackedFAB } from './StackedFAB';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -47,9 +46,8 @@ const EmailEditorContent: React.FC = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [showBlockActions, setShowBlockActions] = useState(false);
   const [actionBlockId, setActionBlockId] = useState<string | null>(null);
-  const [showGlobalStyles, setShowGlobalStyles] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('mobile');
-  const [swipePage, setSwipePage] = useState(0);
+  const [swipePage, setSwipePage] = useState(1); // Start on Edit page
   
   // Undo/Redo state
   const [history, setHistory] = useState<EmailDocument[]>([]);
@@ -962,7 +960,7 @@ const EmailEditorContent: React.FC = () => {
 
       {/* Persistent Toolbar */}
       <View style={styles.toolbar}>
-        {/* Edit/Preview Toggle */}
+        {/* Design/Edit/Preview Toggle */}
         <View style={styles.pageToggle}>
           <TouchableOpacity 
             style={[
@@ -976,7 +974,7 @@ const EmailEditorContent: React.FC = () => {
               styles.pageToggleText,
               swipePage === 0 && styles.pageToggleTextActive
             ]}>
-              ✏️ Edit
+              🎨 Design
             </Text>
           </TouchableOpacity>
           <TouchableOpacity 
@@ -991,6 +989,21 @@ const EmailEditorContent: React.FC = () => {
               styles.pageToggleText,
               swipePage === 1 && styles.pageToggleTextActive
             ]}>
+              ✏️ Edit
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[
+              styles.pageToggleButton,
+              swipePage === 2 && styles.pageToggleButtonActive
+            ]}
+            onPress={() => setSwipePage(2)}
+            activeOpacity={0.7}
+          >
+            <Text style={[
+              styles.pageToggleText,
+              swipePage === 2 && styles.pageToggleTextActive
+            ]}>
               👁️ Preview
             </Text>
           </TouchableOpacity>
@@ -999,7 +1012,7 @@ const EmailEditorContent: React.FC = () => {
         {/* Action Buttons - conditional based on current page */}
         <View style={styles.toolbarActions}>
           {/* Undo/Redo - only show on Edit page */}
-          {swipePage === 0 && (
+          {swipePage === 1 && (
             <>
               <TouchableOpacity 
                 style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
@@ -1051,6 +1064,7 @@ const EmailEditorContent: React.FC = () => {
         currentPage={swipePage}
         onPageChange={setSwipePage}
         viewMode={viewMode}
+        onUpdateGlobalStyles={updateGlobalStyles}
       >
         <View style={styles.editorContainer}>
           <EmailHeader
@@ -1114,19 +1128,6 @@ const EmailEditorContent: React.FC = () => {
       </SwipeableEditor>
 
       {/* FABs and Modals - outside SwipeableEditor */}
-      {/* Stacked FABs for Add Block and Global Styles */}
-      {swipePage === 0 && (
-        <StackedFAB
-          style={styles.fab}
-          actions={[
-            {
-              icon: '🎨',
-              label: 'Global Styles',
-              onPress: () => setShowGlobalStyles(true),
-            },
-          ]}
-        />
-      )}
       
       {/* Original Block Picker FAB */}
       <BlockPicker onSelectType={(type) => addBlock(type)} />
@@ -1168,23 +1169,6 @@ const EmailEditorContent: React.FC = () => {
           />
         ) : null;
       })()}
-
-      {/* Global Styles Editor */}
-      {showGlobalStyles && (
-        <GlobalStylesEditor
-          visible={showGlobalStyles}
-          onClose={() => setShowGlobalStyles(false)}
-          globalStyles={currentDocument.globalStyles || {
-            bodyBackgroundColor: '#f5f5f5',
-            fontFamily: 'Arial, sans-serif',
-            fontSize: 16,
-            textColor: '#333333',
-            linkColor: '#1976d2',
-            headingColor: '#000000',
-          }}
-          onUpdate={updateGlobalStyles}
-        />
-      )}
 
       {/* Drag Preview */}
       {/* <DragPreview /> */}

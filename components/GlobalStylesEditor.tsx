@@ -16,6 +16,7 @@ interface GlobalStylesEditorProps {
   onClose: () => void;
   globalStyles: GlobalStyles;
   onUpdate: (styles: GlobalStyles) => void;
+  isInline?: boolean;
 }
 
 export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
@@ -23,6 +24,7 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
   onClose,
   globalStyles,
   onUpdate,
+  isInline = false,
 }) => {
   const [editedStyles, setEditedStyles] = useState<GlobalStyles>({
     ...globalStyles,
@@ -113,15 +115,10 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
     </View>
   );
 
-  return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onClose}
-    >
-      <View style={styles.container}>
-        {/* Header */}
+  const content = (
+    <View style={[styles.container, isInline && styles.inlineContainer]}>
+      {/* Header - hidden in inline mode */}
+      {!isInline && (
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.headerButton}>Cancel</Text>
@@ -131,8 +128,16 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
             <Text style={[styles.headerButton, styles.saveButton]}>Save</Text>
           </TouchableOpacity>
         </View>
+      )}
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      {isInline && (
+        <View style={styles.inlineHeader}>
+          <Text style={styles.inlineTitle}>🎨 Design</Text>
+          <Text style={styles.inlineSubtitle}>Customize your email's global styles</Text>
+        </View>
+      )}
+
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Background Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -281,6 +286,20 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
           </View>
         </ScrollView>
       </View>
+  );
+
+  if (isInline) {
+    return content;
+  }
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      {content}
     </Modal>
   );
 };
@@ -289,6 +308,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  inlineContainer: {
+    backgroundColor: '#f8f9fa',
+  },
+  inlineHeader: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  inlineTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  inlineSubtitle: {
+    fontSize: 14,
+    color: '#666666',
   },
   header: {
     flexDirection: 'row',
