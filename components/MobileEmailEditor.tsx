@@ -1052,13 +1052,12 @@ const EmailEditorContent: React.FC = () => {
         onPageChange={setSwipePage}
         viewMode={viewMode}
       >
-        <View>
+        <View style={styles.editorContainer}>
           <EmailHeader
             document={currentDocument}
             onUpdate={updateDocumentMetadata}
           />
-        </View>
-
+          
           <ResponsiveView viewMode={viewMode} style={styles.canvas}>
             <ScrollView
               style={styles.scrollView}
@@ -1201,6 +1200,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  editorContainer: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
