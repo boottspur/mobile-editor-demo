@@ -940,70 +940,67 @@ const EmailEditorContent: React.FC = () => {
   };
 
   return (
-    <SwipeableEditor 
-      document={currentDocument}
-      currentPage={swipePage}
-      onPageChange={setSwipePage}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <View>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <Text style={styles.backButtonText}>← Back</Text>
-            </TouchableOpacity>
-            <Text style={styles.title} numberOfLines={1}>
-              {currentDocument.name}
+      {/* Persistent Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Text style={styles.backButtonText}>← Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.title} numberOfLines={1}>
+          {currentDocument.name}
+        </Text>
+        <TouchableOpacity
+          onPress={handleSave}
+          style={styles.saveButton}
+        >
+          <Text style={styles.saveButtonText}>Continue</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Persistent Toolbar */}
+      <View style={styles.toolbar}>
+        {/* Edit/Preview Toggle */}
+        <View style={styles.pageToggle}>
+          <TouchableOpacity 
+            style={[
+              styles.pageToggleButton,
+              swipePage === 0 && styles.pageToggleButtonActive
+            ]}
+            onPress={() => setSwipePage(0)}
+            activeOpacity={0.7}
+          >
+            <Text style={[
+              styles.pageToggleText,
+              swipePage === 0 && styles.pageToggleTextActive
+            ]}>
+              ✏️ Edit
             </Text>
-            <TouchableOpacity
-              onPress={handleSave}
-              style={styles.saveButton}
-            >
-              <Text style={styles.saveButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[
+              styles.pageToggleButton,
+              swipePage === 1 && styles.pageToggleButtonActive
+            ]}
+            onPress={() => setSwipePage(1)}
+            activeOpacity={0.7}
+          >
+            <Text style={[
+              styles.pageToggleText,
+              swipePage === 1 && styles.pageToggleTextActive
+            ]}>
+              👁️ Preview
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          {/* New Toolbar Section */}
-          <View style={styles.toolbar}>
-            {/* Edit/Preview Toggle */}
-            <View style={styles.pageToggle}>
-              <TouchableOpacity 
-                style={[
-                  styles.pageToggleButton,
-                  swipePage === 0 && styles.pageToggleButtonActive
-                ]}
-                onPress={() => setSwipePage(0)}
-                activeOpacity={0.7}
-              >
-                <Text style={[
-                  styles.pageToggleText,
-                  swipePage === 0 && styles.pageToggleTextActive
-                ]}>
-                  ✏️ Edit
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[
-                  styles.pageToggleButton,
-                  swipePage === 1 && styles.pageToggleButtonActive
-                ]}
-                onPress={() => setSwipePage(1)}
-                activeOpacity={0.7}
-              >
-                <Text style={[
-                  styles.pageToggleText,
-                  swipePage === 1 && styles.pageToggleTextActive
-                ]}>
-                  👁️ Preview
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Action Buttons */}
-            <View style={styles.toolbarActions}>
-              {/* Undo/Redo */}
+        {/* Action Buttons - conditional based on current page */}
+        <View style={styles.toolbarActions}>
+          {/* Undo/Redo - only show on Edit page */}
+          {swipePage === 0 && (
+            <>
               <TouchableOpacity 
                 style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
                 disabled={!canUndo}
@@ -1020,169 +1017,179 @@ const EmailEditorContent: React.FC = () => {
               >
                 <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
               </TouchableOpacity>
-              
-              {/* View Mode Toggle */}
-              <View style={styles.viewModeToggle}>
-                <TouchableOpacity 
-                  style={[
-                    styles.viewModeButton,
-                    viewMode === 'mobile' && styles.viewModeButtonActive
-                  ]}
-                  onPress={() => setViewMode('mobile')}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.viewModeIcon}>📱</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[
-                    styles.viewModeButton,
-                    viewMode === 'desktop' && styles.viewModeButtonActive
-                  ]}
-                  onPress={() => setViewMode('desktop')}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.viewModeIcon}>💻</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+            </>
+          )}
           
+          {/* View Mode Toggle - always visible */}
+          <View style={styles.viewModeToggle}>
+            <TouchableOpacity 
+              style={[
+                styles.viewModeButton,
+                viewMode === 'mobile' && styles.viewModeButtonActive
+              ]}
+              onPress={() => setViewMode('mobile')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.viewModeIcon}>📱</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[
+                styles.viewModeButton,
+                viewMode === 'desktop' && styles.viewModeButtonActive
+              ]}
+              onPress={() => setViewMode('desktop')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.viewModeIcon}>💻</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      <SwipeableEditor 
+        document={currentDocument}
+        currentPage={swipePage}
+        onPageChange={setSwipePage}
+        viewMode={viewMode}
+      >
+        <View>
           <EmailHeader
             document={currentDocument}
             onUpdate={updateDocumentMetadata}
           />
-          
         </View>
 
-        <ResponsiveView viewMode={viewMode} style={styles.canvas}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.canvasContent}
-            onTouchStart={() => {
-              setSelectedBlockId(null);
-              setSelectedSectionId(null);
-              setSelectedLayoutId(null);
-            }}
-          >
-            {currentDocument.sections.map((section, sectionIndex) => (
-              <SectionBlock
-                key={section.id}
-                section={section}
-                isSelected={selectedSectionId === section.id}
-                onSelect={() => setSelectedSectionId(section.id)}
-                onUpdate={(updates) => handleSectionUpdate(section.id, updates)}
-                onDelete={() => handleSectionDelete(section.id)}
-                onDuplicate={() => handleSectionDuplicate(section.id)}
-                onMoveUp={() => handleSectionMove(sectionIndex, sectionIndex - 1)}
-                onMoveDown={() => handleSectionMove(sectionIndex, sectionIndex + 1)}
-                renderBlock={renderBlock}
-                onAddBlock={(columnId, type) => addBlock(type, columnId)}
-                selectedLayoutId={selectedLayoutId}
-                onSelectLayout={setSelectedLayoutId}
-                viewMode={viewMode}
-              />
-            ))}
-            
-            {currentDocument.sections.length === 0 && (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No sections yet</Text>
+          <ResponsiveView viewMode={viewMode} style={styles.canvas}>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.canvasContent}
+              onTouchStart={() => {
+                setSelectedBlockId(null);
+                setSelectedSectionId(null);
+                setSelectedLayoutId(null);
+              }}
+            >
+              {currentDocument.sections.map((section, sectionIndex) => (
+                <SectionBlock
+                  key={section.id}
+                  section={section}
+                  isSelected={selectedSectionId === section.id}
+                  onSelect={() => setSelectedSectionId(section.id)}
+                  onUpdate={(updates) => handleSectionUpdate(section.id, updates)}
+                  onDelete={() => handleSectionDelete(section.id)}
+                  onDuplicate={() => handleSectionDuplicate(section.id)}
+                  onMoveUp={() => handleSectionMove(sectionIndex, sectionIndex - 1)}
+                  onMoveDown={() => handleSectionMove(sectionIndex, sectionIndex + 1)}
+                  renderBlock={renderBlock}
+                  onAddBlock={(columnId, type) => addBlock(type, columnId)}
+                  selectedLayoutId={selectedLayoutId}
+                  onSelectLayout={setSelectedLayoutId}
+                  viewMode={viewMode}
+                />
+              ))}
+              
+              {currentDocument.sections.length === 0 && (
+                <View style={styles.emptyState}>
+                  <Text style={styles.emptyText}>No sections yet</Text>
+                  <TouchableOpacity
+                    style={styles.addSectionButton}
+                    onPress={addSection}
+                  >
+                    <Text style={styles.addSectionText}>+ Add First Section</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Add Section Button */}
+              {currentDocument.sections.length > 0 && (
                 <TouchableOpacity
                   style={styles.addSectionButton}
                   onPress={addSection}
                 >
-                  <Text style={styles.addSectionText}>+ Add First Section</Text>
+                  <Text style={styles.addSectionText}>+ Add Section</Text>
                 </TouchableOpacity>
-              </View>
-            )}
+              )}
+            </ScrollView>
+          </ResponsiveView>
+        </View>
+      </SwipeableEditor>
 
-            {/* Add Section Button */}
-            {currentDocument.sections.length > 0 && (
-              <TouchableOpacity
-                style={styles.addSectionButton}
-                onPress={addSection}
-              >
-                <Text style={styles.addSectionText}>+ Add Section</Text>
-              </TouchableOpacity>
-            )}
-          </ScrollView>
-        </ResponsiveView>
+      {/* FABs and Modals - outside SwipeableEditor */}
+      {/* Stacked FABs for Add Block and Global Styles */}
+      {swipePage === 0 && (
+        <StackedFAB
+          style={styles.fab}
+          actions={[
+            {
+              icon: '🎨',
+              label: 'Global Styles',
+              onPress: () => setShowGlobalStyles(true),
+            },
+          ]}
+        />
+      )}
+      
+      {/* Original Block Picker FAB */}
+      <BlockPicker onSelectType={(type) => addBlock(type)} />
 
-        {/* Stacked FABs for Add Block and Global Styles */}
-        {swipePage === 0 && (
-          <StackedFAB
-            style={styles.fab}
-            actions={[
-              {
-                icon: '🎨',
-                label: 'Global Styles',
-                onPress: () => setShowGlobalStyles(true),
-              },
-            ]}
-          />
-        )}
-        
-        {/* Original Block Picker FAB */}
-        <BlockPicker onSelectType={(type) => addBlock(type)} />
+      {showProperties && selectedBlock && (
+        <PropertyPanel
+          block={selectedBlock}
+          onUpdate={(props) => updateBlock(selectedBlock.id, { props: { ...selectedBlock.props, ...props } })}
+          onClose={() => setSelectedBlockId(null)}
+        />
+      )}
 
-        {showProperties && selectedBlock && (
-          <PropertyPanel
-            block={selectedBlock}
-            onUpdate={(props) => updateBlock(selectedBlock.id, { props: { ...selectedBlock.props, ...props } })}
-            onClose={() => setSelectedBlockId(null)}
-          />
-        )}
-
-        {/* Block Actions Modal */}
-        {showBlockActions && actionBlockId && (() => {
-          // Find the block for actions
-          let actionBlock: BlockNode | null = null;
-          for (const section of currentDocument?.sections || []) {
-            for (const layout of section.layouts) {
-              for (const column of layout.columns) {
-                const found = column.blocks.find(b => b.id === actionBlockId);
-                if (found) {
-                  actionBlock = found;
-                  break;
-                }
+      {/* Block Actions Modal */}
+      {showBlockActions && actionBlockId && (() => {
+        // Find the block for actions
+        let actionBlock: BlockNode | null = null;
+        for (const section of currentDocument?.sections || []) {
+          for (const layout of section.layouts) {
+            for (const column of layout.columns) {
+              const found = column.blocks.find(b => b.id === actionBlockId);
+              if (found) {
+                actionBlock = found;
+                break;
               }
             }
           }
+        }
 
-          return actionBlock ? (
-            <BlockActions
-              block={actionBlock}
-              visible={showBlockActions}
-              onClose={() => setShowBlockActions(false)}
-              onCopy={handleCopyBlock}
-              onDelete={handleDeleteBlock}
-              onMove={handleMoveBlock}
-              availableColumns={getAvailableColumns()}
-              currentColumnId={getCurrentColumnId(actionBlockId)}
-            />
-          ) : null;
-        })()}
-
-        {/* Global Styles Editor */}
-        {showGlobalStyles && (
-          <GlobalStylesEditor
-            visible={showGlobalStyles}
-            onClose={() => setShowGlobalStyles(false)}
-            globalStyles={currentDocument.globalStyles || {
-              bodyBackgroundColor: '#f5f5f5',
-              fontFamily: 'Arial, sans-serif',
-              fontSize: 16,
-              textColor: '#333333',
-              linkColor: '#1976d2',
-              headingColor: '#000000',
-            }}
-            onUpdate={updateGlobalStyles}
+        return actionBlock ? (
+          <BlockActions
+            block={actionBlock}
+            visible={showBlockActions}
+            onClose={() => setShowBlockActions(false)}
+            onCopy={handleCopyBlock}
+            onDelete={handleDeleteBlock}
+            onMove={handleMoveBlock}
+            availableColumns={getAvailableColumns()}
+            currentColumnId={getCurrentColumnId(actionBlockId)}
           />
-        )}
+        ) : null;
+      })()}
 
-        {/* Drag Preview */}
-        {/* <DragPreview /> */}
-      </KeyboardAvoidingView>
-    </SwipeableEditor>
+      {/* Global Styles Editor */}
+      {showGlobalStyles && (
+        <GlobalStylesEditor
+          visible={showGlobalStyles}
+          onClose={() => setShowGlobalStyles(false)}
+          globalStyles={currentDocument.globalStyles || {
+            bodyBackgroundColor: '#f5f5f5',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: 16,
+            textColor: '#333333',
+            linkColor: '#1976d2',
+            headingColor: '#000000',
+          }}
+          onUpdate={updateGlobalStyles}
+        />
+      )}
+
+      {/* Drag Preview */}
+      {/* <DragPreview /> */}
+    </KeyboardAvoidingView>
   );
 };
 

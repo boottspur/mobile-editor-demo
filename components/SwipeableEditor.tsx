@@ -26,6 +26,7 @@ interface SwipeableEditorProps {
   children: React.ReactNode; // The existing editor content
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  viewMode?: 'mobile' | 'desktop';
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -36,6 +37,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   children,
   currentPage: externalPage,
   onPageChange,
+  viewMode = 'mobile',
 }) => {
   const [internalPage, setInternalPage] = useState(0);
   const currentPage = externalPage !== undefined ? externalPage : internalPage;
@@ -175,6 +177,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
             <EmailPreview 
               document={document} 
               onBack={switchToEdit}
+              viewMode={viewMode}
             />
           </View>
         </Animated.View>

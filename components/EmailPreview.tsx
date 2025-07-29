@@ -17,10 +17,12 @@ import { DividerBlock } from './blocks/DividerBlock';
 import { SpacerBlock } from './blocks/SpacerBlock';
 import { VideoBlock } from './blocks/VideoBlock';
 import { ProductBlock } from './blocks/ProductBlock';
+import { ResponsiveView } from './ResponsiveView';
 
 interface EmailPreviewProps {
   document: EmailDocument;
   onBack?: () => void;
+  viewMode?: 'mobile' | 'desktop';
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -28,6 +30,7 @@ const { width: screenWidth } = Dimensions.get('window');
 export const EmailPreview: React.FC<EmailPreviewProps> = ({
   document,
   onBack,
+  viewMode = 'mobile',
 }) => {
   const [isSending, setIsSending] = useState(false);
 
@@ -148,22 +151,24 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
       </View>
 
       {/* Email Content */}
-      <ScrollView 
-        style={styles.emailContent}
-        contentContainerStyle={styles.emailContentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <View
-          style={[
-            styles.emailBody,
-            document.globalStyles?.bodyBackgroundColor && {
-              backgroundColor: document.globalStyles.bodyBackgroundColor
-            }
-          ]}
+      <ResponsiveView viewMode={viewMode} style={styles.emailContent}>
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.emailContentContainer}
+          showsVerticalScrollIndicator={false}
         >
-          {document.sections.map(renderSection)}
-        </View>
-      </ScrollView>
+          <View
+            style={[
+              styles.emailBody,
+              document.globalStyles?.bodyBackgroundColor && {
+                backgroundColor: document.globalStyles.bodyBackgroundColor
+              }
+            ]}
+          >
+            {document.sections.map(renderSection)}
+          </View>
+        </ScrollView>
+      </ResponsiveView>
 
       {/* Action Bar */}
       <View style={styles.actionBar}>
@@ -255,6 +260,9 @@ const styles = StyleSheet.create({
   
   // Email Content
   emailContent: {
+    flex: 1,
+  },
+  scrollView: {
     flex: 1,
   },
   emailContentContainer: {
