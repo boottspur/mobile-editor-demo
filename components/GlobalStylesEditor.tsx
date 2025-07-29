@@ -17,6 +17,7 @@ interface GlobalStylesEditorProps {
   globalStyles: GlobalStyles;
   onUpdate: (styles: GlobalStyles) => void;
   isInline?: boolean;
+  mobileDesignMode?: boolean;
 }
 
 export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
@@ -25,6 +26,7 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
   globalStyles,
   onUpdate,
   isInline = false,
+  mobileDesignMode = false,
 }) => {
   const [editedStyles, setEditedStyles] = useState<GlobalStyles>({
     ...globalStyles,
@@ -132,8 +134,15 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
 
       {isInline && (
         <View style={styles.inlineHeader}>
-          <Text style={styles.inlineTitle}>🎨 Design</Text>
-          <Text style={styles.inlineSubtitle}>Customize your email's global styles</Text>
+          <Text style={styles.inlineTitle}>
+            {mobileDesignMode ? '📱 Mobile Design' : '🎨 Design'}
+          </Text>
+          <Text style={styles.inlineSubtitle}>
+            {mobileDesignMode 
+              ? 'Customize mobile-specific styles and media queries'
+              : 'Customize your email\'s global styles'
+            }
+          </Text>
         </View>
       )}
 
@@ -238,6 +247,99 @@ export const GlobalStylesEditor: React.FC<GlobalStylesEditorProps> = ({
               onSelect={(color) => updateStyle('headingColor', color)}
             />
           </View>
+
+          {/* Mobile-Specific Section - only show in mobile design mode */}
+          {mobileDesignMode && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>📱 Mobile Optimizations</Text>
+                <Text style={styles.sectionDescription}>
+                  Mobile-specific styles and responsive adjustments
+                </Text>
+              </View>
+
+              {/* Mobile Font Size Override */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Mobile Font Size</Text>
+                <Text style={styles.inputDescription}>Override font size for mobile devices</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View style={styles.chipContainer}>
+                    {[12, 14, 16, 18, 20, 22].map((size) => (
+                      <TouchableOpacity
+                        key={size}
+                        style={[
+                          styles.sizeChip,
+                          editedStyles.mobileFontSize === size && styles.activeChip,
+                        ]}
+                        onPress={() => updateStyle('mobileFontSize', size)}
+                      >
+                        <Text style={[
+                          styles.chipText,
+                          editedStyles.mobileFontSize === size && styles.activeChipText,
+                        ]}>
+                          {size}px
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* Mobile Padding */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Mobile Container Padding</Text>
+                <Text style={styles.inputDescription}>Adjust spacing for mobile screens</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View style={styles.chipContainer}>
+                    {[8, 12, 16, 20, 24].map((padding) => (
+                      <TouchableOpacity
+                        key={padding}
+                        style={[
+                          styles.sizeChip,
+                          editedStyles.mobilePadding === padding && styles.activeChip,
+                        ]}
+                        onPress={() => updateStyle('mobilePadding', padding)}
+                      >
+                        <Text style={[
+                          styles.chipText,
+                          editedStyles.mobilePadding === padding && styles.activeChipText,
+                        ]}>
+                          {padding}px
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* Mobile Button Sizes */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Mobile Button Height</Text>
+                <Text style={styles.inputDescription}>Optimize button sizes for touch</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View style={styles.chipContainer}>
+                    {[40, 44, 48, 52, 56].map((height) => (
+                      <TouchableOpacity
+                        key={height}
+                        style={[
+                          styles.sizeChip,
+                          editedStyles.mobileButtonHeight === height && styles.activeChip,
+                        ]}
+                        onPress={() => updateStyle('mobileButtonHeight', height)}
+                      >
+                        <Text style={[
+                          styles.chipText,
+                          editedStyles.mobileButtonHeight === height && styles.activeChipText,
+                        ]}>
+                          {height}px
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          )}
 
           {/* Reset Section */}
           <View style={styles.section}>
@@ -407,6 +509,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
+    marginBottom: 4,
+  },
+  inputDescription: {
+    fontSize: 13,
+    color: '#666666',
     marginBottom: 12,
   },
   chipContainer: {

@@ -1013,29 +1013,12 @@ const EmailEditorContent: React.FC = () => {
 
         {/* Second Row: Action Buttons */}
         <View style={styles.secondaryToolbar}>
-          {/* Undo/Redo - only show on Edit page */}
-          {swipePage === 1 && (
-            <View style={styles.undoRedoGroup}>
-              <TouchableOpacity 
-                style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
-                disabled={!canUndo}
-                onPress={handleUndo}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.toolbarButtonText, !canUndo && styles.disabledButtonText]}>↶</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.toolbarButton, !canRedo && styles.disabledButton]} 
-                disabled={!canRedo}
-                onPress={handleRedo}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          {/* Left Spacer */}
+          <View style={styles.toolbarSpacer}>
+            {/* Empty space for centering */}
+          </View>
           
-          {/* View Mode Toggle - always visible */}
+          {/* Center: View Mode Toggle - always visible */}
           <View style={styles.viewModeToggle}>
             <TouchableOpacity 
               style={[
@@ -1058,6 +1041,30 @@ const EmailEditorContent: React.FC = () => {
               <Text style={styles.viewModeIcon}>💻</Text>
             </TouchableOpacity>
           </View>
+          
+          {/* Right: Undo/Redo - only show on Edit page */}
+          <View style={styles.toolbarSpacer}>
+            {swipePage === 1 && (
+              <View style={styles.undoRedoGroup}>
+                <TouchableOpacity 
+                  style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
+                  disabled={!canUndo}
+                  onPress={handleUndo}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.toolbarButtonText, !canUndo && styles.disabledButtonText]}>↶</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.toolbarButton, !canRedo && styles.disabledButton]} 
+                  disabled={!canRedo}
+                  onPress={handleRedo}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -1067,6 +1074,7 @@ const EmailEditorContent: React.FC = () => {
         onPageChange={setSwipePage}
         viewMode={viewMode}
         onUpdateGlobalStyles={updateGlobalStyles}
+        mobileDesignMode={swipePage === 0 && viewMode === 'mobile'}
       >
         <View style={styles.editorContainer}>
           <EmailHeader
@@ -1250,6 +1258,12 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     paddingBottom: 8,
     minHeight: 44,
+  },
+  toolbarSpacer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   pageToggle: {
     flexDirection: 'row',

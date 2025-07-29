@@ -30,6 +30,7 @@ interface SwipeableEditorProps {
   onPageChange?: (page: number) => void;
   viewMode?: 'mobile' | 'desktop';
   onUpdateGlobalStyles?: (globalStyles: import('../types').GlobalStyles) => void;
+  mobileDesignMode?: boolean;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -42,6 +43,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   onPageChange,
   viewMode = 'mobile',
   onUpdateGlobalStyles,
+  mobileDesignMode = false,
 }) => {
   const [internalPage, setInternalPage] = useState(0);
   const currentPage = externalPage !== undefined ? externalPage : internalPage;
@@ -199,6 +201,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
               }}
               onUpdate={onUpdateGlobalStyles || (() => {})}
               isInline={true}
+              mobileDesignMode={mobileDesignMode}
             />
           </View>
 
