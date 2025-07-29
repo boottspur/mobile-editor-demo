@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, StyleSheet, TouchableOpacity, TextStyle } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, TextStyle } from 'react-native';
 import { TextProps, BlockNode } from '../../types';
 import { DraggableItem } from '../DraggableItem';
 
