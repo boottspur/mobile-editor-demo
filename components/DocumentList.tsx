@@ -419,6 +419,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   thumbnail: {
+    width: 100,
     height: 100,
     backgroundColor: '#fff',
     borderRadius: 8,
