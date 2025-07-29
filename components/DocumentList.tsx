@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
+import { AIOnboardingScreen } from './ai/AIOnboardingScreen';
 
 interface DocumentListProps {
   onSelectDocument: (document: EmailDocument) => void;
@@ -22,6 +23,7 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
   const [loading, setLoading] = useState(true);
   const [showBrowseModal, setShowBrowseModal] = useState(false);
   const [showBannerModal, setShowBannerModal] = useState(false);
+  const [showAIOnboarding, setShowAIOnboarding] = useState(false);
 
   useEffect(() => {
     loadDocuments();
@@ -49,6 +51,37 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
     } catch (error) {
       console.error('Error creating document:', error);
       Alert.alert('Error', 'Failed to create template');
+    }
+  };
+
+  const handleAIComplete = async (aiDocument: any) => {
+    try {
+      // Create a new document from AI-generated content
+      const newDoc = await documentStorage.createDocument(aiDocument.name);
+      
+      // Update the document with AI-generated data
+      const updatedDoc = {
+        ...newDoc,
+        subject: aiDocument.subject,
+        fromName: aiDocument.fromName,
+        fromEmail: aiDocument.fromEmail,
+        preheader: aiDocument.preheader,
+        globalStyles: aiDocument.globalStyles,
+        // Store AI content for potential future use
+        aiGenerated: true,
+        aiContent: aiDocument.aiContent,
+        brandData: aiDocument.brandData,
+      };
+
+      await documentStorage.saveDocument(updatedDoc);
+      setDocuments([...documents, updatedDoc]);
+      setShowAIOnboarding(false);
+      
+      // Navigate to the new AI-generated document
+      onSelectDocument(updatedDoc);
+    } catch (error) {
+      console.error('Error creating AI document:', error);
+      Alert.alert('Error', 'Failed to create AI-generated email');
     }
   };
 
@@ -216,6 +249,22 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
         <Text style={styles.headerTitle}>Templates</Text>
       </View>
 
+      {/* AI Create Button */}
+      <View style={styles.aiCreateContainer}>
+        <TouchableOpacity 
+          style={styles.aiCreateButton}
+          onPress={() => setShowAIOnboarding(true)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.aiCreateIcon}>🤖</Text>
+          <View style={styles.aiCreateTextContainer}>
+            <Text style={styles.aiCreateTitle}>Create with AI Assistant</Text>
+            <Text style={styles.aiCreateSubtitle}>Get professional emails in minutes</Text>
+          </View>
+          <Text style={styles.aiCreateArrow}>→</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -307,6 +356,18 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
             </TouchableOpacity>
           </View>
         </View>
+      </Modal>
+
+      {/* AI Onboarding Modal */}
+      <Modal
+        visible={showAIOnboarding}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <AIOnboardingScreen
+          onComplete={handleAIComplete}
+          onBack={() => setShowAIOnboarding(false)}
+        />
       </Modal>
 
       {/* Bottom Banner */}
@@ -609,5 +670,48 @@ const styles = StyleSheet.create({
     color: '#1976d2',
     fontSize: 16,
     fontWeight: '600',
+  },
+  
+  // AI Create Button Styles
+  aiCreateContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#ffffff',
+  },
+  aiCreateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Fallback
+    backgroundColor: '#667eea',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderRadius: 12,
+    shadowColor: '#667eea',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  aiCreateIcon: {
+    fontSize: 28,
+    marginRight: 16,
+  },
+  aiCreateTextContainer: {
+    flex: 1,
+  },
+  aiCreateTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 2,
+  },
+  aiCreateSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  aiCreateArrow: {
+    fontSize: 20,
+    color: '#ffffff',
+    fontWeight: 'bold',
   },
 });
