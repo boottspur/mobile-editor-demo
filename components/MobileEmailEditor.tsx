@@ -26,8 +26,11 @@ import { BlockPicker } from './BlockPicker';
 import { PropertyPanel } from './PropertyPanel';
 import { EmailHeader } from './EmailHeader';
 import { SectionBlock } from './SectionBlock';
+import { DragDropProvider, useDragDrop, DragItem, DropZone } from '../contexts/DragDropContext';
+import { DragPreview } from './DragPreview';
 
-export const MobileEmailEditor: React.FC = () => {
+const EmailEditorContent: React.FC = () => {
+  const { setDropHandler } = useDragDrop();
   const { pendingDocument, clearPendingDocument } = useDeepLink();
   const [currentDocument, setCurrentDocument] = useState<EmailDocument | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -635,6 +638,59 @@ export const MobileEmailEditor: React.FC = () => {
     setSelectedSectionId(newSection.id);
   };
 
+  // Handle drag and drop operations
+  const handleDrop = (dragItem: DragItem, dropZone: DropZone) => {
+    if (!currentDocument) return;
+
+    console.log('Drop:', dragItem.type, 'into', dropZone.type, dropZone.id);
+
+    if (dragItem.type === 'block' && dropZone.type === 'column') {
+      // Move block to different column
+      const block = dragItem.item as BlockNode;
+      const targetColumnId = dropZone.id;
+      
+      // Remove block from source location
+      let updatedSections = [...currentDocument.sections];
+      
+      // Find and remove the block from its current location
+      for (const section of updatedSections) {
+        for (const layout of section.layouts) {
+          for (const column of layout.columns) {
+            const blockIndex = column.blocks.findIndex(b => b.id === block.id);
+            if (blockIndex !== -1) {
+              column.blocks.splice(blockIndex, 1);
+              break;
+            }
+          }
+        }
+      }
+      
+      // Add block to target column
+      for (const section of updatedSections) {
+        for (const layout of section.layouts) {
+          for (const column of layout.columns) {
+            if (column.id === targetColumnId) {
+              column.blocks.push(block);
+              break;
+            }
+          }
+        }
+      }
+      
+      setCurrentDocument({
+        ...currentDocument,
+        sections: updatedSections,
+        lastModified: new Date().toISOString(),
+      });
+      setHasChanges(true);
+    }
+  };
+
+  // Set up drop handler
+  React.useEffect(() => {
+    setDropHandler(handleDrop);
+  }, [currentDocument]);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -722,7 +778,18 @@ export const MobileEmailEditor: React.FC = () => {
             onClose={() => setSelectedBlockId(null)}
           />
         )}
+
+        {/* Drag Preview */}
+        <DragPreview />
     </KeyboardAvoidingView>
+  );
+};
+
+export const MobileEmailEditor: React.FC = () => {
+  return (
+    <DragDropProvider>
+      <EmailEditorContent />
+    </DragDropProvider>
   );
 };
 

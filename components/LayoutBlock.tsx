@@ -9,6 +9,9 @@ import {
   Alert,
 } from 'react-native';
 import { Layout, Column, BlockNode, BlockType } from '../types';
+import { DraggableItem } from './DraggableItem';
+import { DropZone } from './DropZone';
+import { useDragDrop } from '../contexts/DragDropContext';
 
 interface LayoutBlockProps {
   layout: Layout;
@@ -19,6 +22,9 @@ interface LayoutBlockProps {
   onDuplicate: () => void;
   renderBlock: (node: BlockNode) => React.ReactNode;
   onAddBlock: (columnId: string, type: BlockType) => void;
+  onMoveBlock: (fromColumnId: string, toColumnId: string, fromIndex: number, toIndex: number) => void;
+  sectionId: string;
+  layoutIndex: number;
 }
 
 export const LayoutBlock: React.FC<LayoutBlockProps> = ({
@@ -30,6 +36,9 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
   onDuplicate,
   renderBlock,
   onAddBlock,
+  onMoveBlock,
+  sectionId,
+  layoutIndex,
 }) => {
   const [showControls, setShowControls] = useState(false);
 
@@ -99,18 +108,29 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
     '#17a2b8', '#6f42c1', '#fd7e14', '#20c997'
   ];
 
+  const layoutDragItem = {
+    type: 'layout' as const,
+    item: layout,
+    sourceId: sectionId,
+    sourceIndex: layoutIndex,
+  };
+
   return (
     <>
-      <TouchableOpacity
+      <DraggableItem 
+        dragItem={layoutDragItem}
         style={[
           styles.layoutContainer,
           { backgroundColor: layout.backgroundColor || '#ffffff' },
           isSelected && styles.selectedLayout,
         ]}
-        onPress={onSelect}
-        onLongPress={() => setShowControls(true)}
-        activeOpacity={0.8}
       >
+        <TouchableOpacity
+          onPress={onSelect}
+          onLongPress={() => setShowControls(true)}
+          activeOpacity={0.8}
+          style={styles.layoutTouchable}
+        >
         {/* Layout Header with Controls */}
         {isSelected && (
           <View style={styles.layoutHeader}>
@@ -172,8 +192,16 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
               )}
 
               {/* Column Content */}
-              <View style={styles.columnContent}>
-                {column.blocks.map((block) => (
+              <DropZone
+                dropZone={{
+                  type: 'column',
+                  id: column.id,
+                  accepts: ['block'],
+                }}
+                style={styles.columnContent}
+                placeholder="Drop blocks here"
+              >
+                {column.blocks.map((block, blockIndex) => (
                   <View key={block.id} style={styles.blockWrapper}>
                     {renderBlock(block)}
                   </View>
@@ -185,7 +213,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
                     <Text style={styles.emptyColumnHint}>Tap + to add blocks</Text>
                   </View>
                 )}
-              </View>
+              </DropZone>
             </View>
           ))}
         </View>
@@ -199,7 +227,8 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
             <Text style={styles.addColumnText}>+ Add Column</Text>
           </TouchableOpacity>
         )}
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </DraggableItem>
 
       {/* Layout Controls Modal */}
       <Modal
@@ -409,6 +438,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1976d2',
     fontWeight: '500',
+  },
+  layoutTouchable: {
+    flex: 1,
   },
   modalOverlay: {
     flex: 1,

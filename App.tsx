@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppContextProvider } from './contexts/AppContext';
 import { DeepLinkProvider } from './contexts/DeepLinkContext';
 import { AppShell } from './components/AppShell';
@@ -41,15 +42,17 @@ class ErrorBoundary extends React.Component<
 
 export default function App() {
   return (
-    <ErrorBoundary>
-      <SafeAreaProvider>
-        <DeepLinkProvider>
-          <AppContextProvider>
-            <AppShell />
-            <StatusBar style="auto" />
-          </AppContextProvider>
-        </DeepLinkProvider>
-      </SafeAreaProvider>
-    </ErrorBoundary>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <DeepLinkProvider>
+            <AppContextProvider>
+              <AppShell />
+              <StatusBar style="auto" />
+            </AppContextProvider>
+          </DeepLinkProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }

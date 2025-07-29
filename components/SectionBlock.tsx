@@ -191,6 +191,11 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
               onDuplicate={() => handleLayoutDuplicate(layout.id)}
               renderBlock={renderBlock}
               onAddBlock={onAddBlock}
+              onMoveBlock={(fromColumnId, toColumnId, fromIndex, toIndex) => {
+                // Handle block movement between columns - will be implemented by parent
+              }}
+              sectionId={section.id}
+              layoutIndex={section.layouts.findIndex(l => l.id === layout.id)}
             />
           ))}
 

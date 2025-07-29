@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Text, TextInput, StyleSheet, TouchableOpacity, TextStyle } from 'react-native';
-import { TextProps } from '../../types';
+import { TextProps, BlockNode } from '../../types';
+import { DraggableItem } from '../DraggableItem';
 
 interface TextBlockProps {
   node: { id: string; props: TextProps };
@@ -66,20 +67,50 @@ export const TextBlock: React.FC<TextBlockProps> = ({
     }
   };
 
+  const dragItem = {
+    type: 'block' as const,
+    item: node as BlockNode,
+    sourceId: '', // Will be set by parent
+    sourceIndex: 0, // Will be set by parent
+  };
+
   return (
-    <TouchableOpacity 
-      onPress={handlePress} 
-      onLongPress={onStartEdit}
-      activeOpacity={0.8}
+    <DraggableItem 
+      dragItem={dragItem}
+      disabled={isEditing}
+      style={[
+        styles.container,
+        isSelected && styles.selected,
+      ]}
     >
-      <Text style={textStyle}>
-        {props.content || 'Tap to edit text'}
-      </Text>
-    </TouchableOpacity>
+      <TouchableOpacity 
+        onPress={handlePress} 
+        onLongPress={onStartEdit}
+        activeOpacity={0.8}
+        style={styles.touchable}
+      >
+        <Text style={textStyle}>
+          {props.content || 'Tap to edit text'}
+        </Text>
+      </TouchableOpacity>
+    </DraggableItem>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    padding: 8,
+  },
+  selected: {
+    borderColor: '#1976d2',
+    backgroundColor: 'rgba(25, 118, 210, 0.05)',
+  },
+  touchable: {
+    minHeight: 24,
+  },
   input: {
     minHeight: 30,
     borderRadius: 4,
