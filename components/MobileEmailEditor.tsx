@@ -29,6 +29,7 @@ import { SectionBlock } from './SectionBlock';
 import { DragDropProvider, useDragDrop, DragItem, DropZone } from '../contexts/DragDropContext';
 import { DragPreview } from './DragPreview';
 import { BlockActions } from './BlockActions';
+import { GlobalStylesEditor } from './GlobalStylesEditor';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -42,6 +43,7 @@ const EmailEditorContent: React.FC = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [showBlockActions, setShowBlockActions] = useState(false);
   const [actionBlockId, setActionBlockId] = useState<string | null>(null);
+  const [showGlobalStyles, setShowGlobalStyles] = useState(false);
 
   useEffect(() => {
     if (selectedBlockId) {
@@ -520,6 +522,15 @@ const EmailEditorContent: React.FC = () => {
     setHasChanges(true);
   };
 
+  const updateGlobalStyles = (globalStyles: import('../types').GlobalStyles) => {
+    setCurrentDocument({
+      ...currentDocument,
+      globalStyles,
+      lastModified: new Date().toISOString(),
+    });
+    setHasChanges(true);
+  };
+
   const handleSectionUpdate = (sectionId: string, updates: Partial<Section>) => {
     if (!currentDocument) return;
 
@@ -888,6 +899,16 @@ const EmailEditorContent: React.FC = () => {
             document={currentDocument}
             onUpdate={updateDocumentMetadata}
           />
+          
+          <View style={styles.toolsHeader}>
+            <TouchableOpacity
+              style={styles.toolButton}
+              onPress={() => setShowGlobalStyles(true)}
+            >
+              <Text style={styles.toolButtonIcon}>🎨</Text>
+              <Text style={styles.toolButtonText}>Global Styles</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView
@@ -981,6 +1002,23 @@ const EmailEditorContent: React.FC = () => {
           ) : null;
         })()}
 
+        {/* Global Styles Editor */}
+        {showGlobalStyles && (
+          <GlobalStylesEditor
+            visible={showGlobalStyles}
+            onClose={() => setShowGlobalStyles(false)}
+            globalStyles={currentDocument.globalStyles || {
+              bodyBackgroundColor: '#f5f5f5',
+              fontFamily: 'Arial, sans-serif',
+              fontSize: 16,
+              textColor: '#333333',
+              linkColor: '#1976d2',
+              headingColor: '#000000',
+            }}
+            onUpdate={updateGlobalStyles}
+          />
+        )}
+
         {/* Drag Preview */}
         {/* <DragPreview /> */}
     </KeyboardAvoidingView>
@@ -1065,5 +1103,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',
+  },
+  toolsHeader: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  toolButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    marginRight: 10,
+  },
+  toolButtonIcon: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  toolButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
   },
 });
