@@ -6,9 +6,13 @@ import { migrateDocument } from './documentMigration';
 import simpleLayout from '../assets/documents/simple-layout.js';
 import twoColumn from '../assets/documents/two-column.js';
 import complexLayout from '../assets/documents/complex-layout.js';
+import techNewsletter from '../assets/documents/tech-newsletter.js';
+import ecommerceNewsletter from '../assets/documents/e-commerce-newsletter.js';
 
 class DocumentStorageService {
   private bundledDocuments: EmailDocument[] = [
+    techNewsletter as EmailDocument,
+    ecommerceNewsletter as EmailDocument,
     simpleLayout as EmailDocument,
     twoColumn as EmailDocument,
     complexLayout as EmailDocument,
