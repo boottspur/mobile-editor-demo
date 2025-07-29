@@ -187,7 +187,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     // Simulate content generation
     setTimeout(() => {
       addAIMessage(
-        `✨ Your email is ready! I've created a custom design with appropriate colors, content, and call-to-action for ${name}. You can customize any part of it, or we can send it as-is. What would you like to do?`,
+        `✨ Your email is ready! I've created a custom design with appropriate colors, content, and call-to-action for ${name}. You can see it above. What would you like to do next?`,
         'template_preview',
         [
           { id: 'customize', label: '✏️ Customize Content', value: 'customize', type: 'confirmation' },
@@ -207,7 +207,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     switch (action) {
       case 'customize':
         addAIMessage(
-          "Great! You can tap any part of the email to edit it. I'll provide suggestions as you go. Try tapping the headline or main text to see how easy it is to customize.",
+          "Perfect! You can tap any part of the email above to edit it. I'll provide suggestions as you go. The template is fully customizable while keeping the professional design.",
           'customization'
         );
         break;
@@ -294,32 +294,47 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
 
   const canShowTextInput = currentStep === 'business_input' && !isAITyping;
 
+  if (!isVisible) return null;
+
   return (
     <Animated.View 
       style={[
-        styles.container,
+        styles.overlay,
         {
-          transform: [{
-            translateX: slideAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [screenWidth, 0],
-            }),
-          }],
+          opacity: slideAnimation,
         },
       ]}
     >
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            transform: [{
+              translateY: slideAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [300, 0],
+              }),
+            }],
+          },
+        ]}
+      >
       <KeyboardAvoidingView 
         style={styles.keyboardAvoid}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.aiAvatar}>
-            <Text style={styles.aiAvatarText}>🤖</Text>
-          </View>
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>AI Marketing Assistant</Text>
-            <Text style={styles.headerSubtitle}>Creating your email campaign</Text>
+          {/* Drag Handle */}
+          <View style={styles.dragHandle} />
+          
+          <View style={styles.headerContent}>
+            <View style={styles.aiAvatar}>
+              <Text style={styles.aiAvatarText}>🤖</Text>
+            </View>
+            <View style={styles.headerInfo}>
+              <Text style={styles.headerTitle}>AI Marketing Assistant</Text>
+              <Text style={styles.headerSubtitle}>Creating your email campaign</Text>
+            </View>
           </View>
         </View>
 
@@ -357,23 +372,31 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
           </View>
         )}
       </KeyboardAvoidingView>
+      </Animated.View>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     position: 'absolute',
     top: 0,
+    left: 0,
     right: 0,
-    width: screenWidth,
-    height: screenHeight,
-    backgroundColor: '#ffffff',
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     zIndex: 1000,
+    justifyContent: 'flex-end',
+  },
+  container: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: screenHeight * 0.7,
     shadowColor: '#000',
-    shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
     elevation: 16,
   },
   keyboardAvoid: {
@@ -382,13 +405,30 @@ const styles = StyleSheet.create({
   
   // Header
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     backgroundColor: '#f8f9fa',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    position: 'relative',
+  },
+  dragHandle: {
+    position: 'absolute',
+    top: 8,
+    left: '50%',
+    marginLeft: -20,
+    width: 40,
+    height: 4,
+    backgroundColor: '#ccc',
+    borderRadius: 2,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
   },
   aiAvatar: {
     width: 40,
@@ -418,11 +458,13 @@ const styles = StyleSheet.create({
   
   // Messages
   messagesContainer: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#f8f9fa',
+    maxHeight: screenHeight * 0.4,
   },
   messagesContent: {
     paddingVertical: 20,
+    paddingBottom: 40,
   },
   messageContainer: {
     marginBottom: 16,

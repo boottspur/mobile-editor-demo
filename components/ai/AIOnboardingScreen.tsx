@@ -152,9 +152,11 @@ export const AIOnboardingScreen: React.FC<AIOnboardingScreenProps> = ({
         
         <Text style={styles.headerTitle}>AI Email Creator</Text>
         
-        <TouchableOpacity style={styles.aiToggle} onPress={toggleAI}>
-          <Text style={styles.aiToggleText}>🤖</Text>
-        </TouchableOpacity>
+        {showTemplate && (
+          <TouchableOpacity style={styles.aiToggle} onPress={toggleAI}>
+            <Text style={styles.aiToggleText}>🤖</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Main Content Area */}
@@ -163,7 +165,7 @@ export const AIOnboardingScreen: React.FC<AIOnboardingScreenProps> = ({
         {showTemplate && aiContent && brandData ? (
           <View style={styles.templateContainer}>
             <Text style={styles.previewTitle}>Your AI-Generated Email</Text>
-            <View style={styles.templateWrapper}>
+            <View style={[styles.templateWrapper, showAI && styles.templateWrapperWithAI]}>
               <AISmartTemplate
                 aiContent={aiContent}
                 brandData={brandData}
@@ -175,22 +177,24 @@ export const AIOnboardingScreen: React.FC<AIOnboardingScreenProps> = ({
               />
             </View>
             
-            {/* Action Buttons */}
-            <View style={styles.actionButtons}>
-              <TouchableOpacity 
-                style={[styles.actionButton, styles.secondaryButton]} 
-                onPress={toggleAI}
-              >
-                <Text style={styles.secondaryButtonText}>✏️ Customize with AI</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.actionButton, styles.primaryButton]} 
-                onPress={handleComplete}
-              >
-                <Text style={styles.primaryButtonText}>✅ Use This Email</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Action Buttons - Only show when AI is not active */}
+            {!showAI && (
+              <View style={styles.actionButtons}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.secondaryButton]} 
+                  onPress={toggleAI}
+                >
+                  <Text style={styles.secondaryButtonText}>✏️ Customize with AI</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.primaryButton]} 
+                  onPress={handleComplete}
+                >
+                  <Text style={styles.primaryButtonText}>✅ Use This Email</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ) : (
           /* Welcome State */
@@ -239,12 +243,14 @@ export const AIOnboardingScreen: React.FC<AIOnboardingScreenProps> = ({
         )}
       </View>
 
-      {/* AI Assistant Overlay */}
-      <AIAssistant
-        isVisible={showAI}
-        onBusinessData={handleBusinessData}
-        onTemplateGenerated={handleTemplateGenerated}
-      />
+      {/* AI Assistant Bottom Sheet */}
+      {showAI && (
+        <AIAssistant
+          isVisible={showAI}
+          onBusinessData={handleBusinessData}
+          onTemplateGenerated={handleTemplateGenerated}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -371,6 +377,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     marginBottom: 20,
+  },
+  templateWrapperWithAI: {
+    marginBottom: 0,
+    paddingBottom: 20,
   },
   actionButtons: {
     flexDirection: 'row',
