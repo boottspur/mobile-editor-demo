@@ -36,16 +36,56 @@ class DocumentStorageService {
       // If no documents exist, seed with bundled documents
       if (!existingDocs || existingDocs.length === 0) {
         console.log('📚 Seeding Supabase with bundled documents...');
-        for (const doc of this.bundledDocuments) {
-          const migratedDoc = migrateDocument(doc);
-          await this.saveDocument(migratedDoc);
-        }
+        await this.seedTemplates();
         console.log('✅ Seeded Supabase with', this.bundledDocuments.length, 'documents');
       } else {
-        console.log('✅ Supabase already has documents, skipping seed');
+        console.log('✅ Supabase already has documents, checking for new templates...');
+        await this.addMissingTemplates();
       }
     } catch (error) {
       console.warn('⚠️ Failed to initialize Supabase, using bundled documents:', error);
+    }
+  }
+
+  async seedTemplates(): Promise<void> {
+    for (const doc of this.bundledDocuments) {
+      const migratedDoc = migrateDocument(doc);
+      await this.saveDocument(migratedDoc);
+    }
+  }
+
+  async addMissingTemplates(): Promise<void> {
+    try {
+      console.log('🔍 Checking for missing newsletter templates...');
+      
+      // Check which template IDs are missing
+      const templateIds = this.bundledDocuments.map(doc => doc.id);
+      
+      const { data: existingDocs, error } = await supabase
+        .from('documents')
+        .select('id')
+        .in('id', templateIds);
+
+      if (error) {
+        console.warn('⚠️ Error checking existing templates:', error.message);
+        return;
+      }
+
+      const existingIds = new Set(existingDocs?.map(doc => doc.id) || []);
+      const missingTemplates = this.bundledDocuments.filter(doc => !existingIds.has(doc.id));
+
+      if (missingTemplates.length > 0) {
+        console.log('📚 Adding', missingTemplates.length, 'new templates to Supabase...');
+        for (const template of missingTemplates) {
+          const migratedDoc = migrateDocument(template);
+          await this.saveDocument(migratedDoc);
+          console.log('✅ Added template:', template.name);
+        }
+      } else {
+        console.log('✅ All templates already exist in Supabase');
+      }
+    } catch (error) {
+      console.warn('⚠️ Failed to check/add missing templates:', error);
     }
   }
 
