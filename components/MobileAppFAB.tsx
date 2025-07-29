@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, Platform, Image } from 'react-native';
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
 
@@ -77,7 +77,14 @@ export const MobileAppFAB: React.FC<MobileAppFABProps> = ({ currentDocument }) =
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.fabButton} onPress={handleOpenInApp}>
-        <Text style={styles.fabIcon}>{Platform.OS === 'ios' ? '🍎' : '🤖'}</Text>
+        <Image
+          source={Platform.OS === 'ios' 
+            ? require('../assets/ios.svg') 
+            : require('../assets/android.png')
+          }
+          style={styles.iconImage}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -125,7 +132,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fabIcon: {
-    fontSize: 24,
+  iconImage: {
+    width: 32,
+    height: 32,
   },
 });

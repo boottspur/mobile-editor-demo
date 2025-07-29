@@ -1276,8 +1276,8 @@ const EmailEditorContent: React.FC = () => {
         ) : null;
       })()}
 
-      {/* Mobile App FAB - Only show in edit mode */}
-      {swipePage === 1 && (
+      {/* Mobile App FAB - Only show in edit mode and web context */}
+      {swipePage === 1 && Platform.OS === 'web' && (
         <MobileAppFAB currentDocument={currentDocument} />
       )}
 
