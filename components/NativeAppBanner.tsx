@@ -65,40 +65,8 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
         ]
       );
       
-      return; // Skip the fallback logic since we're handling it above
-      
-      try {
-        // This code is kept for reference but won't execute due to return above
-        console.warn('Fallback code - should not reach here in Snack demo');
-        
-        // Fallback: Traditional Expo Go deep link
-        const expoDeepLink = 'exp://exp.host/@boottspur/mobile-editor-demo';
-        const deepLinkUrl = currentDocument 
-          ? `${expoDeepLink}?docId=${currentDocument.id}`
-          : expoDeepLink;
-          
-        try {
-          await Linking.openURL(deepLinkUrl);
-        } catch (deepLinkError) {
-          console.error('Deep link also failed:', deepLinkError);
-          // Final fallback: Show Expo Go installation instructions
-          Alert.alert(
-            'Experience Our iOS App',
-            'See this demo running natively on iOS! Choose your preferred method:',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { 
-                text: 'View iOS Preview', 
-                onPress: () => WebBrowser.openBrowserAsync(snackUrl.replace('?', '?platform=ios&'))
-              },
-              { 
-                text: 'Install Expo Go', 
-                onPress: () => openExpoGoStore() 
-              },
-            ]
-          );
-        }
-      }
+      // For Snack demo, we handle everything above, so we can return early
+      return;
     } catch (error) {
       console.error('Error in handleOpenInApp:', error);
       Alert.alert('Error', 'Unable to open native preview');
