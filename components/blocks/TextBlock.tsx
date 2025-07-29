@@ -12,6 +12,7 @@ interface TextBlockProps {
   onStartEdit: () => void;
   onEndEdit: () => void;
   onShowActions?: () => void;
+  isPreview?: boolean;
 }
 
 export const TextBlock: React.FC<TextBlockProps> = ({
@@ -23,6 +24,7 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   onStartEdit,
   onEndEdit,
   onShowActions,
+  isPreview = false,
 }) => {
   const [tempContent, setTempContent] = useState(node.props.content);
   const props = node.props;
@@ -87,6 +89,17 @@ export const TextBlock: React.FC<TextBlockProps> = ({
     sourceIndex: 0, // Will be set by parent
   };
 
+  // In preview mode, render as plain text without editing capabilities
+  if (isPreview) {
+    return (
+      <View style={styles.previewContainer}>
+        <Text style={textStyle}>
+          {props.content || ''}
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <TouchableOpacity 
       onPress={handlePress} 
@@ -141,5 +154,8 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 30,
     borderRadius: 4,
+  },
+  previewContainer: {
+    padding: 8,
   },
 });

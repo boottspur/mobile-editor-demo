@@ -32,6 +32,7 @@ import { BlockActions } from './BlockActions';
 import { GlobalStylesEditor } from './GlobalStylesEditor';
 import { ViewModeToggle, ViewMode } from './ViewModeToggle';
 import { ResponsiveView } from './ResponsiveView';
+import { SwipeableEditor } from './SwipeableEditor';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -378,9 +379,9 @@ const EmailEditorContent: React.FC = () => {
     }
   };
 
-  const renderBlock = (node: BlockNode): React.ReactNode => {
-    const isSelected = node.id === selectedBlockId;
-    const isEditing = node.id === editingBlockId;
+  const renderBlock = (node: BlockNode, isPreview = false): React.ReactNode => {
+    const isSelected = !isPreview && node.id === selectedBlockId;
+    const isEditing = !isPreview && node.id === editingBlockId;
 
     switch (node.type) {
       case 'container':
@@ -405,6 +406,7 @@ const EmailEditorContent: React.FC = () => {
             onStartEdit={() => setEditingBlockId(node.id)}
             onEndEdit={() => setEditingBlockId(null)}
             onShowActions={() => handleShowBlockActions(node.id)}
+            isPreview={isPreview}
           />
         );
       case 'image':
@@ -878,10 +880,11 @@ const EmailEditorContent: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <SwipeableEditor document={currentDocument}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
         <View>
           <View style={styles.header}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -1032,7 +1035,8 @@ const EmailEditorContent: React.FC = () => {
 
         {/* Drag Preview */}
         {/* <DragPreview /> */}
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SwipeableEditor>
   );
 };
 
