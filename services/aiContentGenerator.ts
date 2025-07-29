@@ -314,10 +314,21 @@ export class AIContentGenerator {
     await this.delay(1500 + Math.random() * 1500);
     
     const detectedType = businessType || this.detectBusinessType(businessName);
-    const templates = contentTemplates[goal]?.[detectedType] || contentTemplates[goal]?.service;
+    const goalTemplates = contentTemplates[goal];
+    const templates = goalTemplates?.[detectedType] || goalTemplates?.service;
     
     if (!templates) {
-      throw new Error(`No templates found for goal: ${goal}, type: ${detectedType}`);
+      // Fallback to basic template
+      return {
+        businessName,
+        businessInitials: this.generateBusinessInitials(businessName),
+        headline: `Welcome to ${businessName}!`,
+        tagline: 'We\'re excited to work with you',
+        bodyText: 'Thank you for your interest in our services. We look forward to helping you achieve your goals.',
+        ctaText: 'Get Started',
+        ctaAction: this.generateCTAAction(goal),
+        contactInfo: this.generateContactInfo(businessName, detectedType)
+      };
     }
 
     // Get random content from templates
@@ -384,7 +395,7 @@ export class AIContentGenerator {
   // Method to get a complete business profile for demo scenarios
   getBusinessProfile(businessName: string) {
     const normalizedName = businessName.toLowerCase();
-    return demoBusinesses[normalizedName] || null;
+    return (demoBusinesses as any)[normalizedName] || null;
   }
 
   // Method to generate a complete email document from AI content
@@ -404,7 +415,6 @@ export class AIContentGenerator {
       sections: [],
       globalStyles: {
         bodyBackgroundColor: brandData.colors.background,
-        primaryColor: brandData.colors.primary,
         textColor: brandData.colors.text
       },
       createdAt: new Date(),

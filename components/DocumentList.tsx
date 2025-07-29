@@ -681,7 +681,6 @@ const styles = StyleSheet.create({
   aiCreateButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Fallback
     backgroundColor: '#667eea',
     paddingHorizontal: 20,
     paddingVertical: 16,
