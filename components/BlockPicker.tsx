@@ -91,6 +91,60 @@ export const BlockPicker: React.FC<BlockPickerProps> = ({ onSelectType }) => {
     outputRange: ['0deg', '45deg'],
   });
 
+  const renderPickerContent = () => (
+    <>
+      <View style={styles.handle} />
+      
+      <Text style={styles.pickerTitle}>Add Block</Text>
+      
+      {/* Category Tabs */}
+      <ScrollView 
+        horizontal 
+        style={styles.categoryTabs}
+        showsHorizontalScrollIndicator={false}
+      >
+        {categories.map((category) => (
+          <TouchableOpacity
+            key={category.id}
+            style={[
+              styles.categoryTab,
+              selectedCategory === category.id && styles.activeCategoryTab
+            ]}
+            onPress={() => setSelectedCategory(category.id)}
+          >
+            <Text style={styles.categoryIcon}>{category.icon}</Text>
+            <Text style={[
+              styles.categoryText,
+              selectedCategory === category.id && styles.activeCategoryText
+            ]}>
+              {category.title}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* Block Options */}
+      <ScrollView style={styles.blocksContainer}>
+        {filteredBlocks.map((block) => (
+          <TouchableOpacity
+            key={block.type}
+            style={styles.blockOption}
+            onPress={() => handleSelectBlock(block.type)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.blockIcon}>
+              <Text style={styles.blockIconText}>{block.icon}</Text>
+            </View>
+            <View style={styles.blockInfo}>
+              <Text style={styles.blockTitle}>{block.title}</Text>
+              <Text style={styles.blockDescription}>{block.description}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </>
+  );
+
   return (
     <>
       {/* FAB Button */}
@@ -110,75 +164,48 @@ export const BlockPicker: React.FC<BlockPickerProps> = ({ onSelectType }) => {
       </TouchableOpacity>
 
       {/* Block Picker Modal */}
-      <Modal
-        visible={isOpen}
-        transparent={Platform.OS === 'ios'}
-        animationType={Platform.OS === 'ios' ? 'slide' : 'fade'}
-        onRequestClose={togglePicker}
-        statusBarTranslucent={Platform.OS === 'android'}
-      >
-        <TouchableOpacity 
-          style={styles.overlay} 
-          onPress={togglePicker}
-          activeOpacity={1}
+      {Platform.OS === 'android' ? (
+        // Android: Use absolute positioned View instead of Modal
+        isOpen && (
+          <View style={styles.androidOverlay}>
+            <TouchableOpacity 
+              style={styles.overlay} 
+              onPress={togglePicker}
+              activeOpacity={1}
+            >
+              <TouchableOpacity 
+                style={[styles.pickerContainer, { maxHeight: screenHeight * 0.8 }]}
+                activeOpacity={1}
+                onPress={() => {}}
+              >
+                {renderPickerContent()}
+              </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
+        )
+      ) : (
+        // iOS: Use Modal
+        <Modal
+          visible={isOpen}
+          transparent
+          animationType="slide"
+          onRequestClose={togglePicker}
         >
           <TouchableOpacity 
-            style={[styles.pickerContainer, { maxHeight: screenHeight * 0.8 }]}
+            style={styles.overlay} 
+            onPress={togglePicker}
             activeOpacity={1}
-            onPress={() => {}}
           >
-            <View style={styles.handle} />
-            
-            <Text style={styles.pickerTitle}>Add Block</Text>
-            
-            {/* Category Tabs */}
-            <ScrollView 
-              horizontal 
-              style={styles.categoryTabs}
-              showsHorizontalScrollIndicator={false}
+            <TouchableOpacity 
+              style={[styles.pickerContainer, { maxHeight: screenHeight * 0.8 }]}
+              activeOpacity={1}
+              onPress={() => {}}
             >
-              {categories.map((category) => (
-                <TouchableOpacity
-                  key={category.id}
-                  style={[
-                    styles.categoryTab,
-                    selectedCategory === category.id && styles.activeCategoryTab
-                  ]}
-                  onPress={() => setSelectedCategory(category.id)}
-                >
-                  <Text style={styles.categoryIcon}>{category.icon}</Text>
-                  <Text style={[
-                    styles.categoryText,
-                    selectedCategory === category.id && styles.activeCategoryText
-                  ]}>
-                    {category.title}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            {/* Block Options */}
-            <ScrollView style={styles.blocksContainer}>
-              {filteredBlocks.map((block) => (
-                <TouchableOpacity
-                  key={block.type}
-                  style={styles.blockOption}
-                  onPress={() => handleSelectBlock(block.type)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.blockIcon}>
-                    <Text style={styles.blockIconText}>{block.icon}</Text>
-                  </View>
-                  <View style={styles.blockInfo}>
-                    <Text style={styles.blockTitle}>{block.title}</Text>
-                    <Text style={styles.blockDescription}>{block.description}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+              {renderPickerContent()}
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
+        </Modal>
+      )}
     </>
   );
 };
@@ -205,6 +232,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#fff',
     fontWeight: 'bold',
+  },
+  androidOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
   },
   overlay: {
     flex: 1,

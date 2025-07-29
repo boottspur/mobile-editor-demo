@@ -18,11 +18,12 @@ import { SpacerBlock } from './blocks/SpacerBlock';
 import { VideoBlock } from './blocks/VideoBlock';
 import { ProductBlock } from './blocks/ProductBlock';
 import { ResponsiveView } from './ResponsiveView';
+import { TextVersionView } from './TextVersionView';
 
 interface EmailPreviewProps {
   document: EmailDocument;
   onBack?: () => void;
-  viewMode?: 'mobile' | 'desktop';
+  viewMode?: 'mobile' | 'desktop' | 'text';
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -151,24 +152,30 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
       </View>
 
       {/* Email Content */}
-      <ResponsiveView viewMode={viewMode} style={styles.emailContent}>
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.emailContentContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View
-            style={[
-              styles.emailBody,
-              document.globalStyles?.bodyBackgroundColor && {
-                backgroundColor: document.globalStyles.bodyBackgroundColor
-              }
-            ]}
+      {viewMode === 'text' ? (
+        <View style={styles.emailContent}>
+          <TextVersionView document={document} />
+        </View>
+      ) : (
+        <ResponsiveView viewMode={viewMode} style={styles.emailContent}>
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.emailContentContainer}
+            showsVerticalScrollIndicator={false}
           >
-            {document.sections.map(renderSection)}
-          </View>
-        </ScrollView>
-      </ResponsiveView>
+            <View
+              style={[
+                styles.emailBody,
+                document.globalStyles?.bodyBackgroundColor && {
+                  backgroundColor: document.globalStyles.bodyBackgroundColor
+                }
+              ]}
+            >
+              {document.sections.map(renderSection)}
+            </View>
+          </ScrollView>
+        </ResponsiveView>
+      )}
 
       {/* Action Bar */}
       <View style={styles.actionBar}>
