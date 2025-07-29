@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Animated, Platform } from 'react-native';
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
 
@@ -77,8 +77,7 @@ export const MobileAppFAB: React.FC<MobileAppFABProps> = ({ currentDocument }) =
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.fabButton} onPress={handleOpenInApp}>
-        <Text style={styles.fabIcon}>📱</Text>
-        <Text style={styles.fabText}>Mobile App</Text>
+        <Text style={styles.fabIcon}>{Platform.OS === 'ios' ? '🍎' : '🤖'}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -87,20 +86,20 @@ export const MobileAppFAB: React.FC<MobileAppFABProps> = ({ currentDocument }) =
 const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 150,
     right: 20,
     backgroundColor: '#1976d2',
     borderRadius: 28,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
-    minHeight: 56,
+    elevation: 12,
+    zIndex: 1001,
   },
   dismissButton: {
     position: 'absolute',
@@ -121,16 +120,12 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   fabButton: {
-    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   fabIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  fabText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 24,
   },
 });

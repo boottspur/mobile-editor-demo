@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   TextInput,
+  Modal,
 } from 'react-native';
 import { EmailDocument } from '../types';
 import { documentStorage } from '../utils/documentStorage';
@@ -19,6 +20,8 @@ interface DocumentListProps {
 export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) => {
   const [documents, setDocuments] = useState<EmailDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBrowseModal, setShowBrowseModal] = useState(false);
+  const [showBannerModal, setShowBannerModal] = useState(false);
 
   useEffect(() => {
     loadDocuments();
@@ -63,11 +66,15 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
       onPress={() => onSelectDocument(item)}
       activeOpacity={0.7}
     >
+      <View style={styles.thumbnail}>
+        <View style={styles.thumbnailGrid}>
+          <View style={styles.thumbnailBlock} />
+          <View style={styles.thumbnailBlock} />
+          <View style={[styles.thumbnailBlock, styles.thumbnailBlockWide]} />
+          <View style={styles.thumbnailBlock} />
+        </View>
+      </View>
       <Text style={styles.documentTitle}>{item.name}</Text>
-      <Text style={styles.documentDate}>Modified: {formatDate(item.lastModified)}</Text>
-      <Text style={styles.documentBlocks}>
-        {item.sections?.length || 0} section{(item.sections?.length || 0) !== 1 ? 's' : ''}
-      </Text>
     </TouchableOpacity>
   );
 
@@ -84,9 +91,6 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Templates</Text>
-        <TouchableOpacity style={styles.createButton} onPress={handleCreateNew}>
-          <Text style={styles.createButtonText}>+ New</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
@@ -113,11 +117,85 @@ export const DocumentList: React.FC<DocumentListProps> = ({ onSelectDocument }) 
           </View>
         }
         ListFooterComponent={
-          <View style={styles.browseContainer}>
+          <TouchableOpacity 
+            style={styles.browseContainer}
+            onPress={() => setShowBrowseModal(true)}
+            activeOpacity={0.7}
+          >
             <Text style={styles.browseText}>📚 Browse templates</Text>
-          </View>
+          </TouchableOpacity>
         }
       />
+
+      {/* Browse Templates Modal */}
+      <Modal
+        visible={showBrowseModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowBrowseModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Browse Templates</Text>
+            <Text style={styles.modalText}>
+              In production, this would open an expanded template library with:
+              
+              • Professional newsletter templates
+              • Industry-specific designs  
+              • Seasonal and promotional layouts
+              • Advanced filtering and search
+              • Template categories and tags
+            </Text>
+            <TouchableOpacity 
+              style={styles.modalButton}
+              onPress={() => setShowBrowseModal(false)}
+            >
+              <Text style={styles.modalButtonText}>Got it!</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Banner Modal */}
+      <Modal
+        visible={showBannerModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowBannerModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>📱 Try Our Mobile App</Text>
+            <Text style={styles.modalText}>
+              In production, this would:
+              
+              • Detect your device platform (iOS/Android)
+              • Check if our mobile app is already installed
+              • Open the app directly if installed
+              • Redirect to App Store/Play Store if not installed
+              • Sync your templates and preferences automatically
+              • Provide native mobile editing experience
+            </Text>
+            <TouchableOpacity 
+              style={styles.modalButton}
+              onPress={() => setShowBannerModal(false)}
+            >
+              <Text style={styles.modalButtonText}>Got it!</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Bottom Banner */}
+      <View style={styles.bottomBanner}>
+        <Text style={styles.bannerText}>📱 Try our mobile app</Text>
+        <TouchableOpacity 
+          style={styles.bannerButton} 
+          onPress={() => setShowBannerModal(true)}
+        >
+          <Text style={styles.bannerButtonText}>Get App</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -140,17 +218,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
-  },
-  createButton: {
-    backgroundColor: '#1976d2',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  createButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,
@@ -176,19 +243,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   documentTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8,
-  },
-  documentDate: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  documentBlocks: {
-    fontSize: 14,
-    color: '#999',
+    textAlign: 'center',
   },
   separator: {
     height: 15,
@@ -215,7 +273,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     padding: 20,
-    paddingTop: 0,
+    paddingTop: 15,
     backgroundColor: '#fff',
   },
   searchInput: {
@@ -236,5 +294,96 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     fontWeight: '500',
+  },
+  thumbnail: {
+    height: 80,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    marginBottom: 12,
+    padding: 8,
+  },
+  thumbnailGrid: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  thumbnailBlock: {
+    flex: 1,
+    height: 16,
+    backgroundColor: '#e9ecef',
+    borderRadius: 2,
+    minWidth: 30,
+  },
+  thumbnailBlockWide: {
+    flex: 2,
+    backgroundColor: '#1976d2',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#666',
+    marginBottom: 24,
+  },
+  modalButton: {
+    backgroundColor: '#1976d2',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  bottomBanner: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#1976d2',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    paddingBottom: 25,
+  },
+  bannerText: {
+    color: '#fff',
+    fontSize: 16,
+    flex: 1,
+  },
+  bannerButton: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  bannerButtonText: {
+    color: '#1976d2',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
