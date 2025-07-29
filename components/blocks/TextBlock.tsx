@@ -75,25 +75,20 @@ export const TextBlock: React.FC<TextBlockProps> = ({
   };
 
   return (
-    <DraggableItem 
-      dragItem={dragItem}
-      disabled={isEditing}
+    <TouchableOpacity 
+      onPress={handlePress} 
+      onLongPress={onStartEdit}
+      activeOpacity={0.8}
       style={[
         styles.container,
+        styles.touchable,
         isSelected && styles.selected,
       ]}
     >
-      <TouchableOpacity 
-        onPress={handlePress} 
-        onLongPress={onStartEdit}
-        activeOpacity={0.8}
-        style={styles.touchable}
-      >
-        <Text style={textStyle}>
-          {props.content || 'Tap to edit text'}
-        </Text>
-      </TouchableOpacity>
-    </DraggableItem>
+      <Text style={textStyle}>
+        {props.content || 'Tap to edit text'}
+      </Text>
+    </TouchableOpacity>
   );
 };
 

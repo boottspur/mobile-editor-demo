@@ -89,11 +89,8 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
   const panGestureHandler = useAnimatedGestureHandler({
     onStart: (event) => {
       // Only allow pan if long press was triggered first
-      if (!isDragActive) return;
     },
     onActive: (event) => {
-      if (!isDragActive) return;
-      
       translateX.value = event.translationX;
       translateY.value = event.translationY;
       
@@ -101,11 +98,9 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
       runOnJS(updateDragAction)(event.absoluteX, event.absoluteY);
     },
     onEnd: () => {
-      if (!isDragActive) return;
       runOnJS(endDragAction)();
     },
     onCancel: () => {
-      if (!isDragActive) return;
       runOnJS(endDragAction)();
     },
   });

@@ -30,7 +30,7 @@ import { DragDropProvider, useDragDrop, DragItem, DropZone } from '../contexts/D
 import { DragPreview } from './DragPreview';
 
 const EmailEditorContent: React.FC = () => {
-  const { setDropHandler } = useDragDrop();
+  // const { setDropHandler } = useDragDrop(); // Temporarily disabled
   const { pendingDocument, clearPendingDocument } = useDeepLink();
   const [currentDocument, setCurrentDocument] = useState<EmailDocument | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -687,9 +687,9 @@ const EmailEditorContent: React.FC = () => {
   };
 
   // Set up drop handler
-  React.useEffect(() => {
-    setDropHandler(handleDrop);
-  }, [currentDocument]);
+  // useEffect(() => {
+  //   setDropHandler(handleDrop);
+  // }, [currentDocument, setDropHandler]);
 
   return (
     <KeyboardAvoidingView
@@ -780,17 +780,13 @@ const EmailEditorContent: React.FC = () => {
         )}
 
         {/* Drag Preview */}
-        <DragPreview />
+        {/* <DragPreview /> */}
     </KeyboardAvoidingView>
   );
 };
 
 export const MobileEmailEditor: React.FC = () => {
-  return (
-    <DragDropProvider>
-      <EmailEditorContent />
-    </DragDropProvider>
-  );
+  return <EmailEditorContent />;
 };
 
 const styles = StyleSheet.create({

@@ -72,7 +72,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
       setIsHovering(hovering);
       setActiveDropZone(hovering ? dropZone.id : null);
     }
-  }, [dragPreview, isDragging, layout]);
+  }, [dragPreview, isDragging, layout, isHovering, setActiveDropZone, dropZone.id]);
 
   // Handle drop
   useEffect(() => {
@@ -80,7 +80,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
       onDrop(dragItem, dropZone);
       setIsHovering(false);
     }
-  }, [isDragging, isHovering, dragItem, onDrop]);
+  }, [isDragging, isHovering, dragItem, onDrop, dropZone]);
 
   // Animate based on state
   useEffect(() => {

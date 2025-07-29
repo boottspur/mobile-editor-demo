@@ -117,20 +117,16 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
 
   return (
     <>
-      <DraggableItem 
-        dragItem={layoutDragItem}
+      <TouchableOpacity
         style={[
           styles.layoutContainer,
           { backgroundColor: layout.backgroundColor || '#ffffff' },
           isSelected && styles.selectedLayout,
         ]}
+        onPress={onSelect}
+        onLongPress={() => setShowControls(true)}
+        activeOpacity={0.8}
       >
-        <TouchableOpacity
-          onPress={onSelect}
-          onLongPress={() => setShowControls(true)}
-          activeOpacity={0.8}
-          style={styles.layoutTouchable}
-        >
         {/* Layout Header with Controls */}
         {isSelected && (
           <View style={styles.layoutHeader}>
@@ -192,15 +188,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
               )}
 
               {/* Column Content */}
-              <DropZone
-                dropZone={{
-                  type: 'column',
-                  id: column.id,
-                  accepts: ['block'],
-                }}
-                style={styles.columnContent}
-                placeholder="Drop blocks here"
-              >
+              <View style={styles.columnContent}>
                 {column.blocks.map((block, blockIndex) => (
                   <View key={block.id} style={styles.blockWrapper}>
                     {renderBlock(block)}
@@ -213,7 +201,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
                     <Text style={styles.emptyColumnHint}>Tap + to add blocks</Text>
                   </View>
                 )}
-              </DropZone>
+              </View>
             </View>
           ))}
         </View>
@@ -227,8 +215,7 @@ export const LayoutBlock: React.FC<LayoutBlockProps> = ({
             <Text style={styles.addColumnText}>+ Add Column</Text>
           </TouchableOpacity>
         )}
-        </TouchableOpacity>
-      </DraggableItem>
+      </TouchableOpacity>
 
       {/* Layout Controls Modal */}
       <Modal
