@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -183,8 +184,8 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
         </Animated.View>
       </GestureDetector>
 
-      {/* Swipe Hints */}
-      {currentPage === 0 && (
+      {/* Swipe Hints - Hidden on web to prevent layout issues */}
+      {Platform.OS !== 'web' && currentPage === 0 && (
         <View style={styles.swipeHintRight}>
           <View style={styles.swipeHintContent}>
             <Text style={styles.swipeHintText}>👁️</Text>
@@ -193,7 +194,7 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
         </View>
       )}
 
-      {currentPage === 1 && (
+      {Platform.OS !== 'web' && currentPage === 1 && (
         <View style={styles.swipeHintLeft}>
           <View style={styles.swipeHintContent}>
             <Text style={styles.swipeHintText}>✏️</Text>
