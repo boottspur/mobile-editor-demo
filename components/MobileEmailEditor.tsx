@@ -1032,26 +1032,9 @@ const EmailEditorContent: React.FC = () => {
 
         {/* Second Row: Action Buttons */}
         <View style={styles.secondaryToolbar}>
-          {/* Left: Test & Live Preview buttons - only show on Preview page */}
+          {/* Left Spacer */}
           <View style={styles.toolbarSpacer}>
-            {swipePage === 2 && (
-              <View style={styles.previewToolsGroup}>
-                <TouchableOpacity 
-                  style={styles.previewToolButton}
-                  onPress={handleTest}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.previewToolButtonText}>🔍 Test</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.previewToolButtonPremium}
-                  onPress={handleLivePreview}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.previewToolButtonPremiumText}>📧 Live Preview</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            {/* Empty space for centering */}
           </View>
           
           {/* Center: View Mode Toggle - always visible */}
@@ -1078,7 +1061,7 @@ const EmailEditorContent: React.FC = () => {
             </TouchableOpacity>
           </View>
           
-          {/* Right: Undo/Redo - only show on Edit page */}
+          {/* Right: Undo/Redo on Edit page, Test/Live Preview on Preview page */}
           <View style={styles.toolbarSpacer}>
             {swipePage === 1 && (
               <View style={styles.undoRedoGroup}>
@@ -1097,6 +1080,24 @@ const EmailEditorContent: React.FC = () => {
                   activeOpacity={0.7}
                 >
                   <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            {swipePage === 2 && (
+              <View style={styles.previewToolsGroup}>
+                <TouchableOpacity 
+                  style={styles.toolbarButton}
+                  onPress={handleTest}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.toolbarButtonText}>🔬</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.previewToolButtonPremium}
+                  onPress={handleLivePreview}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.previewToolButtonPremiumText}>🧪</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -1356,37 +1357,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  previewToolButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 16,
-    minHeight: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  previewToolButtonText: {
-    fontSize: 12,
-    color: '#495057',
-    fontWeight: '500',
-  },
   previewToolButtonPremium: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#e3f2fd',
     borderWidth: 1,
     borderColor: '#1976d2',
-    borderRadius: 16,
-    minHeight: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },
   previewToolButtonPremiumText: {
-    fontSize: 12,
+    fontSize: 18,
     color: '#1976d2',
-    fontWeight: '600',
   },
   viewModeToggle: {
     flexDirection: 'row',
