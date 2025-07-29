@@ -33,6 +33,7 @@ import { GlobalStylesEditor } from './GlobalStylesEditor';
 import { ViewModeToggle, ViewMode } from './ViewModeToggle';
 import { ResponsiveView } from './ResponsiveView';
 import { SwipeableEditor } from './SwipeableEditor';
+import { StackedFAB } from './StackedFAB';
 
 const EmailEditorContent: React.FC = () => {
   // const { setDropHandler } = useDragDrop(); // Temporarily disabled
@@ -48,6 +49,11 @@ const EmailEditorContent: React.FC = () => {
   const [actionBlockId, setActionBlockId] = useState<string | null>(null);
   const [showGlobalStyles, setShowGlobalStyles] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('mobile');
+  const [swipePage, setSwipePage] = useState(0);
+  
+  // Undo/Redo state
+  const [history, setHistory] = useState<EmailDocument[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     if (selectedBlockId) {
@@ -90,6 +96,9 @@ const EmailEditorContent: React.FC = () => {
     setSelectedLayoutId(null);
     setEditingBlockId(null);
     setHasChanges(false);
+    // Initialize history with the loaded document
+    setHistory([JSON.parse(JSON.stringify(migratedDoc))]);
+    setHistoryIndex(0);
   };
 
   const saveAndLoadDocument = async (newDocument: EmailDocument) => {
@@ -173,12 +182,14 @@ const EmailEditorContent: React.FC = () => {
       });
     };
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: updateBlockInSections(currentDocument.sections),
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const addBlock = (type: BlockType, columnId?: string) => {
@@ -205,11 +216,13 @@ const EmailEditorContent: React.FC = () => {
         })),
       }));
 
-      setCurrentDocument({
+      const newDoc = {
         ...currentDocument,
         sections: updatedSections,
         lastModified: new Date().toISOString(),
-      });
+      };
+      setCurrentDocument(newDoc);
+      addToHistory(newDoc);
     } else {
       // Default behavior: add to first available column or create new section
       let updatedSections = [...currentDocument.sections];
@@ -250,11 +263,13 @@ const EmailEditorContent: React.FC = () => {
         }
       }
 
-      setCurrentDocument({
+      const newDoc = {
         ...currentDocument,
         sections: updatedSections,
         lastModified: new Date().toISOString(),
-      });
+      };
+      setCurrentDocument(newDoc);
+      addToHistory(newDoc);
     }
     
     setHasChanges(true);
@@ -518,22 +533,53 @@ const EmailEditorContent: React.FC = () => {
     }
   }
 
+  // Add to history whenever document changes
+  const addToHistory = (doc: EmailDocument) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(JSON.parse(JSON.stringify(doc))); // Deep clone
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setCurrentDocument(JSON.parse(JSON.stringify(history[newIndex])));
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setCurrentDocument(JSON.parse(JSON.stringify(history[newIndex])));
+    }
+  };
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
   const updateDocumentMetadata = (updates: Partial<EmailDocument>) => {
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       ...updates,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const updateGlobalStyles = (globalStyles: import('../types').GlobalStyles) => {
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       globalStyles,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const handleSectionUpdate = (sectionId: string, updates: Partial<Section>) => {
@@ -608,12 +654,14 @@ const EmailEditorContent: React.FC = () => {
     const updatedSections = [...currentDocument.sections];
     updatedSections.splice(sectionIndex + 1, 0, duplicatedSection);
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: updatedSections,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const handleSectionMove = (fromIndex: number, toIndex: number) => {
@@ -623,12 +671,14 @@ const EmailEditorContent: React.FC = () => {
     const [movedSection] = updatedSections.splice(fromIndex, 1);
     updatedSections.splice(toIndex, 0, movedSection);
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: updatedSections,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const addSection = () => {
@@ -649,12 +699,14 @@ const EmailEditorContent: React.FC = () => {
       }],
     };
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: [...currentDocument.sections, newSection],
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
     setSelectedSectionId(newSection.id);
   };
 
@@ -697,12 +749,14 @@ const EmailEditorContent: React.FC = () => {
         }
       }
       
-      setCurrentDocument({
+      const newDoc = {
         ...currentDocument,
         sections: updatedSections,
         lastModified: new Date().toISOString(),
-      });
+      };
+      setCurrentDocument(newDoc);
       setHasChanges(true);
+      addToHistory(newDoc);
     }
   };
 
@@ -745,12 +799,14 @@ const EmailEditorContent: React.FC = () => {
       })),
     }));
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: updatedSections,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   const handleDeleteBlock = (blockId: string) => {
@@ -767,12 +823,14 @@ const EmailEditorContent: React.FC = () => {
       })),
     }));
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: updatedSections,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
 
     // Clear selection if deleted block was selected
     if (selectedBlockId === blockId) {
@@ -826,12 +884,14 @@ const EmailEditorContent: React.FC = () => {
       })),
     }));
 
-    setCurrentDocument({
+    const newDoc = {
       ...currentDocument,
       sections: finalSections,
       lastModified: new Date().toISOString(),
-    });
+    };
+    setCurrentDocument(newDoc);
     setHasChanges(true);
+    addToHistory(newDoc);
   };
 
   // Get available columns for block movement
@@ -880,7 +940,11 @@ const EmailEditorContent: React.FC = () => {
   };
 
   return (
-    <SwipeableEditor document={currentDocument}>
+    <SwipeableEditor 
+      document={currentDocument}
+      currentPage={swipePage}
+      onPageChange={setSwipePage}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -895,10 +959,92 @@ const EmailEditorContent: React.FC = () => {
             </Text>
             <TouchableOpacity
               onPress={handleSave}
-              style={[styles.saveButton, hasChanges && styles.saveButtonActive]}
+              style={styles.saveButton}
             >
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>Continue</Text>
             </TouchableOpacity>
+          </View>
+
+          {/* New Toolbar Section */}
+          <View style={styles.toolbar}>
+            {/* Edit/Preview Toggle */}
+            <View style={styles.pageToggle}>
+              <TouchableOpacity 
+                style={[
+                  styles.pageToggleButton,
+                  swipePage === 0 && styles.pageToggleButtonActive
+                ]}
+                onPress={() => setSwipePage(0)}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.pageToggleText,
+                  swipePage === 0 && styles.pageToggleTextActive
+                ]}>
+                  ✏️ Edit
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[
+                  styles.pageToggleButton,
+                  swipePage === 1 && styles.pageToggleButtonActive
+                ]}
+                onPress={() => setSwipePage(1)}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.pageToggleText,
+                  swipePage === 1 && styles.pageToggleTextActive
+                ]}>
+                  👁️ Preview
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.toolbarActions}>
+              {/* Undo/Redo */}
+              <TouchableOpacity 
+                style={[styles.toolbarButton, !canUndo && styles.disabledButton]} 
+                disabled={!canUndo}
+                onPress={handleUndo}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.toolbarButtonText, !canUndo && styles.disabledButtonText]}>↶</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.toolbarButton, !canRedo && styles.disabledButton]} 
+                disabled={!canRedo}
+                onPress={handleRedo}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.toolbarButtonText, !canRedo && styles.disabledButtonText]}>↷</Text>
+              </TouchableOpacity>
+              
+              {/* View Mode Toggle */}
+              <View style={styles.viewModeToggle}>
+                <TouchableOpacity 
+                  style={[
+                    styles.viewModeButton,
+                    viewMode === 'mobile' && styles.viewModeButtonActive
+                  ]}
+                  onPress={() => setViewMode('mobile')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.viewModeIcon}>📱</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[
+                    styles.viewModeButton,
+                    viewMode === 'desktop' && styles.viewModeButtonActive
+                  ]}
+                  onPress={() => setViewMode('desktop')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.viewModeIcon}>💻</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
           
           <EmailHeader
@@ -906,20 +1052,6 @@ const EmailEditorContent: React.FC = () => {
             onUpdate={updateDocumentMetadata}
           />
           
-          <View style={styles.toolsHeader}>
-            <TouchableOpacity
-              style={styles.toolButton}
-              onPress={() => setShowGlobalStyles(true)}
-            >
-              <Text style={styles.toolButtonIcon}>🎨</Text>
-              <Text style={styles.toolButtonText}>Global Styles</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <ViewModeToggle
-            currentMode={viewMode}
-            onModeChange={setViewMode}
-          />
         </View>
 
         <ResponsiveView viewMode={viewMode} style={styles.canvas}>
@@ -975,7 +1107,21 @@ const EmailEditorContent: React.FC = () => {
           </ScrollView>
         </ResponsiveView>
 
-        {/* FAB Block Picker */}
+        {/* Stacked FABs for Add Block and Global Styles */}
+        {swipePage === 0 && (
+          <StackedFAB
+            style={styles.fab}
+            actions={[
+              {
+                icon: '🎨',
+                label: 'Global Styles',
+                onPress: () => setShowGlobalStyles(true),
+              },
+            ]}
+          />
+        )}
+        
+        {/* Original Block Picker FAB */}
         <BlockPicker onSelectType={(type) => addBlock(type)} />
 
         {showProperties && selectedBlock && (
@@ -1076,15 +1222,98 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingHorizontal: 15,
     borderRadius: 15,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#1976d2',
   },
   saveButtonActive: {
     backgroundColor: '#1976d2',
   },
   saveButtonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#ffffff',
     fontWeight: '600',
+  },
+  
+  // Toolbar styles
+  toolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#f8f9fa',
+  },
+  pageToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#e9ecef',
+    borderRadius: 20,
+    height: 36,
+    padding: 2,
+  },
+  pageToggleButton: {
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 18,
+  },
+  pageToggleButtonActive: {
+    backgroundColor: '#1976d2',
+  },
+  pageToggleText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666666',
+  },
+  pageToggleTextActive: {
+    color: '#ffffff',
+  },
+  toolbarActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  toolbarButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toolbarButtonText: {
+    fontSize: 18,
+    color: '#666666',
+  },
+  disabledButton: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#e9ecef',
+  },
+  disabledButtonText: {
+    color: '#bbb',
+  },
+  viewModeToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#e9ecef',
+    borderRadius: 18,
+    height: 36,
+    padding: 2,
+    marginLeft: 8,
+  },
+  viewModeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewModeButtonActive: {
+    backgroundColor: '#ffffff',
+  },
+  viewModeIcon: {
+    fontSize: 16,
   },
   canvas: {
     flex: 1,
@@ -1149,5 +1378,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#333',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
   },
 });

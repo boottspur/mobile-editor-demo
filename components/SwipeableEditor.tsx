@@ -24,6 +24,8 @@ import { EmailPreview } from './EmailPreview';
 interface SwipeableEditorProps {
   document: EmailDocument | null;
   children: React.ReactNode; // The existing editor content
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -32,12 +34,19 @@ const SWIPE_THRESHOLD = screenWidth * 0.3;
 export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   document,
   children,
+  currentPage: externalPage,
+  onPageChange,
 }) => {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [internalPage, setInternalPage] = useState(0);
+  const currentPage = externalPage !== undefined ? externalPage : internalPage;
   const translateX = useSharedValue(0);
 
   const updatePage = (page: number) => {
-    setCurrentPage(page);
+    if (onPageChange) {
+      onPageChange(page);
+    } else {
+      setInternalPage(page);
+    }
   };
 
   const panGesture = Gesture.Pan()
@@ -95,6 +104,16 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
       }
     });
 
+  // Effect to handle external page changes
+  React.useEffect(() => {
+    if (externalPage !== undefined) {
+      translateX.value = withSpring(externalPage === 0 ? 0 : -screenWidth, {
+        damping: 20,
+        stiffness: 150,
+      });
+    }
+  }, [externalPage]);
+
   const switchToEdit = () => {
     translateX.value = withSpring(0, {
       damping: 20,
@@ -143,37 +162,6 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      {/* Page Indicators */}
-      <View style={styles.indicatorContainer}>
-        <View style={styles.indicatorTrack}>
-          <Animated.View style={[styles.indicatorSlider, indicatorStyle]} />
-          <TouchableOpacity 
-            style={styles.indicatorButton}
-            onPress={switchToEdit}
-            activeOpacity={0.7}
-          >
-            <Text style={[
-              styles.indicatorText,
-              currentPage === 0 && styles.indicatorTextActive
-            ]}>
-              ✏️ Edit
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.indicatorButton}
-            onPress={switchToPreview}
-            activeOpacity={0.7}
-          >
-            <Text style={[
-              styles.indicatorText,
-              currentPage === 1 && styles.indicatorTextActive
-            ]}>
-              👁️ Preview
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       {/* Swipeable Content */}
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.pagesContainer, animatedStyle]}>
