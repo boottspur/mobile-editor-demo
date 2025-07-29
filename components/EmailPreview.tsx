@@ -49,14 +49,14 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
     );
   };
 
-  const handleExportHTML = () => {
+  const handleSchedule = () => {
     Alert.alert(
-      '📧 Export HTML',
-      'HTML export functionality would generate clean email HTML code ready for any email service.',
+      '📅 Schedule Email',
+      'Schedule this email to be sent at a specific date and time.\n\nThis feature would integrate with your email service provider to queue emails for future delivery.',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Copy HTML', onPress: () => {
-          Alert.alert('📋 Copied!', 'HTML code copied to clipboard (demo)');
+        { text: 'Schedule', onPress: () => {
+          Alert.alert('📅 Scheduled!', 'Email scheduled for delivery (demo)');
         }}
       ]
     );
@@ -173,24 +173,20 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({
       {/* Action Bar */}
       <View style={styles.actionBar}>
         <TouchableOpacity
-          style={[styles.actionButton, styles.exportButton]}
-          onPress={handleExportHTML}
-        >
-          <Text style={styles.exportButtonText}>📄 Export HTML</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={[
-            styles.actionButton,
-            styles.sendButton,
-            isSending && styles.sendButtonDisabled
-          ]}
+          style={[styles.actionButton, styles.sendTestButton]}
           onPress={handleTestSend}
           disabled={isSending}
         >
-          <Text style={styles.sendButtonText}>
+          <Text style={styles.sendTestButtonText}>
             {isSending ? '📤 Sending...' : '📧 Send Test'}
           </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.actionButton, styles.scheduleButton]}
+          onPress={handleSchedule}
+        >
+          <Text style={styles.scheduleButtonText}>📅 Schedule</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -309,23 +305,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 4,
   },
-  exportButton: {
+  sendTestButton: {
     backgroundColor: '#f8f9fa',
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
-  exportButtonText: {
+  sendTestButtonText: {
     color: '#495057',
     fontSize: 14,
     fontWeight: '600',
   },
-  sendButton: {
+  scheduleButton: {
     backgroundColor: '#1976d2',
   },
-  sendButtonDisabled: {
-    backgroundColor: '#cccccc',
-  },
-  sendButtonText: {
+  scheduleButtonText: {
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '600',

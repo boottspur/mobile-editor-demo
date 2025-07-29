@@ -558,6 +558,25 @@ const EmailEditorContent: React.FC = () => {
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
+  const handleTest = () => {
+    Alert.alert(
+      '🔍 Email Test',
+      'This would check for common issues like:\n\n• Placeholder text still present\n• Missing alt text on images\n• Broken links\n• Poor subject line length\n• Missing preheader text\n\nThis feature is coming soon!',
+      [{ text: 'Got it', style: 'default' }]
+    );
+  };
+
+  const handleLivePreview = () => {
+    Alert.alert(
+      '📧 Live Preview',
+      'This premium feature would show how your email looks in popular email clients like:\n\n• Gmail (Desktop & Mobile)\n• Outlook (Desktop & Mobile)\n• Apple Mail\n• Yahoo Mail\n\nPowered by Litmus integration.\n\nUpgrade to Pro to unlock this feature!',
+      [
+        { text: 'Maybe Later', style: 'cancel' },
+        { text: 'Learn More', style: 'default' }
+      ]
+    );
+  };
+
   const updateDocumentMetadata = (updates: Partial<EmailDocument>) => {
     const newDoc = {
       ...currentDocument,
@@ -1013,9 +1032,26 @@ const EmailEditorContent: React.FC = () => {
 
         {/* Second Row: Action Buttons */}
         <View style={styles.secondaryToolbar}>
-          {/* Left Spacer */}
+          {/* Left: Test & Live Preview buttons - only show on Preview page */}
           <View style={styles.toolbarSpacer}>
-            {/* Empty space for centering */}
+            {swipePage === 2 && (
+              <View style={styles.previewToolsGroup}>
+                <TouchableOpacity 
+                  style={styles.previewToolButton}
+                  onPress={handleTest}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.previewToolButtonText}>🔍 Test</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.previewToolButtonPremium}
+                  onPress={handleLivePreview}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.previewToolButtonPremiumText}>📧 Live Preview</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
           
           {/* Center: View Mode Toggle - always visible */}
@@ -1314,6 +1350,43 @@ const styles = StyleSheet.create({
   },
   disabledButtonText: {
     color: '#bbb',
+  },
+  previewToolsGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  previewToolButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 16,
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewToolButtonText: {
+    fontSize: 12,
+    color: '#495057',
+    fontWeight: '500',
+  },
+  previewToolButtonPremium: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#e3f2fd',
+    borderWidth: 1,
+    borderColor: '#1976d2',
+    borderRadius: 16,
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewToolButtonPremiumText: {
+    fontSize: 12,
+    color: '#1976d2',
+    fontWeight: '600',
   },
   viewModeToggle: {
     flexDirection: 'row',
