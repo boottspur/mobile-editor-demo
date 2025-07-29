@@ -4,12 +4,12 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Modal,
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import { BlockNode, ContainerProps, TextProps, ImageProps } from '../types';
 
@@ -63,9 +63,10 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
       <>
         <PropertyInput
           label="Content"
-          value={textProps.content || ''}
+          value={textProps.content}
           onChangeText={(value) => updateProp('content', value)}
           multiline
+          numberOfLines={3}
         />
         <PropertyInput
           label="Font Size"
@@ -82,13 +83,13 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
         <PropertySelect
           label="Font Weight"
           value={textProps.fontWeight || 'normal'}
-          options={['normal', 'bold']}
+          options={['normal', 'bold', '600', '700', '800']}
           onSelect={(value) => updateProp('fontWeight', value)}
         />
         <PropertySelect
           label="Text Align"
           value={textProps.textAlign || 'left'}
-          options={['left', 'center', 'right']}
+          options={['left', 'center', 'right', 'justify']}
           onSelect={(value) => updateProp('textAlign', value)}
         />
       </>
@@ -101,9 +102,9 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
       <>
         <PropertyInput
           label="Image URL"
-          value={imageProps.src || ''}
+          value={imageProps.src}
           onChangeText={(value) => updateProp('src', value)}
-          placeholder="https://example.com/image.jpg"
+          placeholder="https://..."
         />
         <PropertyInput
           label="Alt Text"
@@ -115,37 +116,40 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
           label="Width"
           value={imageProps.width || '100%'}
           onChangeText={(value) => updateProp('width', value)}
-          placeholder="100%"
+          placeholder="100% or 300px"
         />
         <PropertyInput
           label="Height"
           value={imageProps.height || 'auto'}
           onChangeText={(value) => updateProp('height', value)}
-          placeholder="auto or 200"
+          placeholder="auto or 200px"
         />
       </>
     );
   };
 
   return (
-    <Modal
-      visible={true}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      presentationStyle="pageSheet"
-      statusBarTranslucent
-    >
+    <View style={styles.fullScreenOverlay}>
+      <TouchableOpacity 
+        style={styles.backdrop} 
+        onPress={onClose} 
+        activeOpacity={1}
+      />
+      
       <KeyboardAvoidingView 
-        style={styles.keyboardAvoid}
+        style={styles.panelContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
       >
-        <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
-          <View style={styles.container} onStartShouldSetResponder={() => true}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.panel}>
             <View style={styles.handle} />
             <View style={styles.header}>
-              <Text style={styles.title}>{block.type.charAt(0).toUpperCase() + block.type.slice(1)} Properties</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <Text style={styles.title}>
+                {block.type.charAt(0).toUpperCase() + block.type.slice(1)} Properties
+              </Text>
               <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
                 <Text style={styles.saveButtonText}>Save</Text>
               </TouchableOpacity>
@@ -162,19 +166,20 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({ block, onUpdate, o
               {block.type === 'image' && renderImageProperties()}
             </ScrollView>
           </View>
-        </TouchableOpacity>
+        </SafeAreaView>
       </KeyboardAvoidingView>
-    </Modal>
+    </View>
   );
 };
 
 interface PropertyInputProps {
   label: string;
   value: string;
-  onChangeText: (text: string) => void;
+  onChangeText: (value: string) => void;
   placeholder?: string;
-  keyboardType?: 'default' | 'numeric';
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
   multiline?: boolean;
+  numberOfLines?: number;
 }
 
 const PropertyInput: React.FC<PropertyInputProps> = ({
@@ -184,6 +189,7 @@ const PropertyInput: React.FC<PropertyInputProps> = ({
   placeholder,
   keyboardType = 'default',
   multiline = false,
+  numberOfLines = 1,
 }) => (
   <View style={styles.inputGroup}>
     <Text style={styles.label}>{label}</Text>
@@ -194,6 +200,7 @@ const PropertyInput: React.FC<PropertyInputProps> = ({
       placeholder={placeholder}
       keyboardType={keyboardType}
       multiline={multiline}
+      numberOfLines={numberOfLines}
     />
   </View>
 );
@@ -212,16 +219,10 @@ const PropertySelect: React.FC<PropertySelectProps> = ({ label, value, options, 
       {options.map((option) => (
         <TouchableOpacity
           key={option}
-          style={[
-            styles.selectOption,
-            value === option && styles.selectedOption,
-          ]}
+          style={[styles.selectOption, value === option && styles.selectOptionActive]}
           onPress={() => onSelect(option)}
         >
-          <Text style={[
-            styles.selectOptionText,
-            value === option && styles.selectedOptionText,
-          ]}>
+          <Text style={[styles.selectOptionText, value === option && styles.selectOptionTextActive]}>
             {option}
           </Text>
         </TouchableOpacity>
@@ -230,23 +231,45 @@ const PropertySelect: React.FC<PropertySelectProps> = ({ label, value, options, 
   </View>
 );
 
-const { height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
+  fullScreenOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
   },
-  overlay: {
-    flex: 1,
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
   },
-  container: {
-    backgroundColor: '#fff',
+  panelContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    maxHeight: screenHeight * 0.75,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  panel: {
+    backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: screenHeight * 0.7,
-    minHeight: 300,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
   },
   handle: {
     width: 40,
@@ -255,52 +278,63 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     alignSelf: 'center',
     marginTop: 10,
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  closeButton: {
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#666',
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+    flex: 1,
+    textAlign: 'center',
   },
   saveButton: {
-    backgroundColor: '#1976d2',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 15,
+    padding: 5,
   },
   saveButtonText: {
-    color: '#fff',
+    fontSize: 16,
+    color: '#1976d2',
     fontWeight: '600',
   },
   content: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
+    maxHeight: screenHeight * 0.5,
   },
   contentContainer: {
-    paddingBottom: 100, // Extra padding for keyboard
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   inputGroup: {
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#333',
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#e0e0e0',
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 12,
     fontSize: 16,
+    color: '#333',
     backgroundColor: '#fff',
   },
   multilineInput: {
@@ -310,17 +344,18 @@ const styles = StyleSheet.create({
   selectContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    marginHorizontal: -4,
   },
   selectOption: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#e0e0e0',
+    borderRadius: 20,
+    margin: 4,
+    backgroundColor: '#fff',
   },
-  selectedOption: {
+  selectOptionActive: {
     backgroundColor: '#1976d2',
     borderColor: '#1976d2',
   },
@@ -328,8 +363,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
   },
-  selectedOptionText: {
+  selectOptionTextActive: {
     color: '#fff',
-    fontWeight: '600',
   },
 });
