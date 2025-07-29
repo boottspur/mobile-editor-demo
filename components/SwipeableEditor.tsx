@@ -41,16 +41,24 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
   };
 
   const panGesture = Gesture.Pan()
+    .activeOffsetX([-10, 10]) // Only activate after 10px horizontal movement
+    .failOffsetY([-15, 15]) // Fail if vertical movement exceeds 15px
+    .onStart(() => {
+      // Store the current offset when gesture starts
+      translateX.value = currentPage === 0 ? 0 : -screenWidth;
+    })
     .onUpdate((event) => {
+      const baseOffset = currentPage === 0 ? 0 : -screenWidth;
+      
       // Limit swipe based on current page
       if (currentPage === 0 && event.translationX > 0) {
         // On first page, can't swipe right
-        translateX.value = event.translationX * 0.1; // Rubber band effect
+        translateX.value = baseOffset + event.translationX * 0.1; // Rubber band effect
       } else if (currentPage === 1 && event.translationX < 0) {
         // On last page, can't swipe left
-        translateX.value = event.translationX * 0.1; // Rubber band effect
+        translateX.value = baseOffset + event.translationX * 0.1; // Rubber band effect
       } else {
-        translateX.value = event.translationX;
+        translateX.value = baseOffset + event.translationX;
       }
     })
     .onEnd((event) => {
@@ -59,13 +67,23 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
       if (shouldSwitchPage) {
         if (event.translationX < 0 && currentPage === 0 && document) {
           // Swipe left - go to preview
-          translateX.value = withSpring(-screenWidth, {}, () => {
-            runOnJS(updatePage)(1);
+          translateX.value = withSpring(-screenWidth, {
+            damping: 20,
+            stiffness: 150,
+          }, (finished) => {
+            if (finished) {
+              runOnJS(updatePage)(1);
+            }
           });
         } else if (event.translationX > 0 && currentPage === 1) {
           // Swipe right - go to editor
-          translateX.value = withSpring(0, {}, () => {
-            runOnJS(updatePage)(0);
+          translateX.value = withSpring(0, {
+            damping: 20,
+            stiffness: 150,
+          }, (finished) => {
+            if (finished) {
+              runOnJS(updatePage)(0);
+            }
           });
         } else {
           // Spring back
@@ -78,15 +96,25 @@ export const SwipeableEditor: React.FC<SwipeableEditorProps> = ({
     });
 
   const switchToEdit = () => {
-    translateX.value = withSpring(0, {}, () => {
-      runOnJS(updatePage)(0);
+    translateX.value = withSpring(0, {
+      damping: 20,
+      stiffness: 150,
+    }, (finished) => {
+      if (finished) {
+        runOnJS(updatePage)(0);
+      }
     });
   };
 
   const switchToPreview = () => {
     if (document) {
-      translateX.value = withSpring(-screenWidth, {}, () => {
-        runOnJS(updatePage)(1);
+      translateX.value = withSpring(-screenWidth, {
+        damping: 20,
+        stiffness: 150,
+      }, (finished) => {
+        if (finished) {
+          runOnJS(updatePage)(1);
+        }
       });
     }
   };
