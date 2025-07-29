@@ -37,20 +37,11 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
       // Show options for engineers to understand the cross-platform demo
       Alert.alert(
         '📱 Cross-Platform Demo',
-        'This demonstrates seamless mobile web → native iOS transition. Choose how to experience the iOS version:',
+        'This demonstrates seamless mobile web → native iOS transition. In Snack, use the device/platform selector in the right panel to switch to iOS simulator.',
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: 'Got it!', style: 'cancel' },
           { 
-            text: '🔄 Switch to iOS (Same Tab)', 
-            onPress: () => {
-              // Reload current page with iOS platform parameter
-              if (typeof window !== 'undefined') {
-                window.location.href = iosSnackUrl;
-              }
-            }
-          },
-          { 
-            text: '📱 Open iOS Preview (New Tab)', 
+            text: '📱 Open iOS in New Tab', 
             onPress: async () => {
               try {
                 await WebBrowser.openBrowserAsync(iosSnackUrl, {
@@ -59,6 +50,12 @@ export const NativeAppBanner: React.FC<NativeAppBannerProps> = ({ currentDocumen
                 });
               } catch (error) {
                 console.error('Error opening iOS preview:', error);
+                // Fallback: Copy URL to clipboard with instructions
+                Alert.alert(
+                  'iOS Demo Link',
+                  `Copy this URL to experience the iOS version:\n\n${iosSnackUrl}`,
+                  [{ text: 'OK' }]
+                );
               }
             }
           },
