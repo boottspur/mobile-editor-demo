@@ -45,10 +45,13 @@
             margin: 0 auto;
         }
 
-        .demo-section {
+        .page-wrapper {
             background: white;
             padding: 40px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section-inner {
+            margin-bottom: 60px;
         }
 
         .demo-title {
@@ -69,150 +72,7 @@
             font-size: 1.1rem;
         }
 
-        .demo-content-wrapper {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-        }
 
-        .demo-main {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .demo-sidebar {
-            width: 320px;
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
-
-        .demo-sidebar-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-
-        .sidebar-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .sidebar-section:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .sidebar-section h3 {
-            font-size: 1.1rem;
-            color: #1976d2;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .cta-button {
-            display: inline-block;
-            width: 100%;
-            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            padding: 16px 24px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
-            text-decoration: none;
-            color: white;
-        }
-
-        .cta-subtitle {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 400;
-            opacity: 0.9;
-            margin-top: 3px;
-        }
-
-        .demo-steps, .expo-steps {
-            margin: 0;
-            padding-left: 20px;
-            color: #555;
-        }
-
-        .demo-steps li, .expo-steps li {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .expo-instructions p {
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .app-links {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .app-link {
-            flex: 1;
-            display: block;
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #333;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .app-link:hover {
-            background: #e3f2fd;
-            border-color: #1976d2;
-            color: #1976d2;
-            text-decoration: none;
-        }
-
-        .feature-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .feature-list li {
-            padding: 6px 0;
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        @media (max-width: 1200px) {
-            .demo-content-wrapper {
-                flex-direction: column;
-            }
-            
-            .demo-sidebar {
-                width: 100%;
-                position: static;
-                max-height: none;
-                margin-top: 30px;
-            }
-        }
 
         .snack-container {
             margin-bottom: 40px;
@@ -221,62 +81,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .content {
-            background: white;
-            padding: 60px 0;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        @media (min-width: 768px) {
-            .content-grid {
-                grid-template-columns: 300px 1fr;
-            }
-        }
-
-        .sidebar {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-        }
-
-        .sidebar h3 {
-            color: #1976d2;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li {
-            margin-bottom: 8px;
-        }
-
-        .sidebar a {
-            color: #666;
-            text-decoration: none;
-            padding: 8px 12px;
-            display: block;
-            border-radius: 4px;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .sidebar a:hover {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
         .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0 20px;
         }
 
@@ -419,113 +226,28 @@
         </div>
     </div>
 
-    <!-- Demo Section -->
-    <div class="demo-section">
+    <!-- Main Page Wrapper -->
+    <div class="page-wrapper">
         <div class="container">
-            <div class="demo-title">
-                <h2>🚀 Interactive Demo</h2>
-                <div class="demo-description">
-                    Explore the complete codebase and see how the mobile email editor works across platforms.
-                </div>
-            </div>
-            
-            <div class="demo-content-wrapper">
-                <!-- Main Content -->
-                <div class="demo-main">
-                    <div class="snack-container">
-                        <div data-snack-id="@boottspur/mobile-editor-demo" data-snack-platform="web" data-snack-preview="false" data-snack-theme="light" data-snack-supports-multiple-files="true" style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:600px;width:100%"></div>
-                    </div>
-                </div>
-                
-                <!-- Right Sidebar -->
-                <div class="demo-sidebar">
-                    <div class="demo-sidebar-content">
-                        <!-- CTA Section -->
-                        <div class="sidebar-section">
-                            <h3>🚀 Try the Demo</h3>
-                            <a href="https://snack.expo.dev/@boottspur/mobile-editor-demo" target="_blank" class="cta-button">
-                                📱 Open Full Demo
-                                <span class="cta-subtitle">With mobile preview</span>
-                            </a>
-                        </div>
-                        
-                        <!-- Instructions Section -->
-                        <div class="sidebar-section">
-                            <h3>📋 How to Use</h3>
-                            <ol class="demo-steps">
-                                <li>Click "Open Full Demo" above</li>
-                                <li>Select "Web" preview to see mobile web experience</li>
-                                <li>Try the onboarding flow and create an email</li>
-                                <li>Switch to iOS/Android to see native experience</li>
-                                <li>Notice the seamless cross-platform functionality</li>
-                            </ol>
-                        </div>
-                        
-                        <!-- Expo Go Section -->
-                        <div class="sidebar-section">
-                            <h3>📱 Try on Your Phone</h3>
-                            <div class="expo-instructions">
-                                <p><strong>Test on real device:</strong></p>
-                                <ol class="expo-steps">
-                                    <li>Install <strong>Expo Go</strong> app</li>
-                                    <li>Open the full demo link</li>
-                                    <li>Click "Open with Expo Go"</li>
-                                    <li>Scan QR code with your phone</li>
-                                </ol>
-                                <div class="app-links">
-                                    <a href="https://apps.apple.com/app/expo-go/id982107779" target="_blank" class="app-link">
-                                        🍎 iOS App Store
-                                    </a>
-                                    <a href="https://play.google.com/store/apps/details?id=host.exp.exponent" target="_blank" class="app-link">
-                                        🤖 Google Play
-                                    </a>
-                                </div>
+            <div class="main-content">
+                    <!-- Demo Section -->
+                    <div class="demo-section-inner">
+                        <div class="demo-title">
+                            <h2>🚀 Interactive Demo</h2>
+                            <div class="demo-description">
+                                Scan the QR code on the right to try on your phone with Expo Go, or switch platforms in the preview panel.
                             </div>
                         </div>
                         
-                        <!-- Key Features Section -->
-                        <div class="sidebar-section">
-                            <h3>✨ Key Features</h3>
-                            <ul class="feature-list">
-                                <li>✅ Cross-platform (iOS, Android, Web)</li>
-                                <li>✅ Touch-optimized editing</li>
-                                <li>✅ Responsive email preview</li>
-                                <li>✅ Professional templates</li>
-                                <li>✅ Real-time saving</li>
-                                <li>✅ Native app promotion</li>
-                            </ul>
+                        <div class="snack-container">
+                            <div data-snack-id="@boottspur/mobile-editor-demo" data-snack-platform="mydevice" data-snack-preview="true" data-snack-theme="light" data-snack-supports-multiple-files="true" style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:700px;width:100%"></div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="content">
-        <div class="container">
-            <div class="content-grid">
-                <!-- Sidebar Navigation -->
-                <div class="sidebar">
-                    <h3>📋 Contents</h3>
-                    <ul>
-                        <li><a href="#executive-summary">Executive Summary</a></li>
-                        <li><a href="#business-goals">Business Goals</a></li>
-                        <li><a href="#demo-context">Demo Context</a></li>
-                        <li><a href="#features">Feature Mapping</a></li>
-                        <li><a href="#technical">Technical Implementation</a></li>
-                        <li><a href="#success-plan">Success Measurement</a></li>
-                        <li><a href="#competitive">Competitive Advantage</a></li>
-                        <li><a href="#scope">Out of Scope</a></li>
-                        <li><a href="#risks">Risk Mitigation</a></li>
-                    </ul>
-                </div>
-
-                <!-- Main Content -->
-                <div class="main-content">
+                    <!-- PRD Content -->
                     <h1 id="executive-summary">Executive Summary</h1>
                     
-                    <p>This demo showcases a mobile-first email editor component designed to integrate into existing email marketing platforms. The goal is to demonstrate how treating the mobile experience as a user context and not just a technical environment can improve user activation, increase free-to-paid conversion, and achieve desktop editor parity on mobile devices (and all the downstream success inherent in that).</p>
+                    <p>This demo showcases a mobile-first email editor component designed to integrate into existing email marketing platforms. The goal is to demonstrate how treating the mobile experience as a user context can improve user activation, increase free-to-paid conversion, and achieve desktop editor parity on mobile devices (and all the downstream success inherent in that).</p>
 
                     <div class="important-note">
                         <strong>Important</strong>: This is a demonstration of an editor component. It is not intended to be production ready code, or even be used for production ready code. It is for demonstration purposes only.
@@ -741,7 +463,6 @@
                     <p>This mobile editor demo demonstrates how adding professional mobile editing capabilities can significantly improve user activation, conversion, and retention. By focusing on the core editing experience while integrating seamlessly with existing workflows, we can achieve desktop editor parity on mobile without disrupting current user flows.</p>
 
                     <p>The demo proves that mobile users don't need to compromise on functionality, enabling them to create professional emails entirely on mobile devices and see the full value of premium features during their trial period.</p>
-                </div>
             </div>
         </div>
     </div>

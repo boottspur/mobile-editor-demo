@@ -80,7 +80,7 @@ export const MobileAppFAB: React.FC<MobileAppFABProps> = ({ currentDocument }) =
         <Image
           source={Platform.OS === 'ios' 
             ? require('../assets/ios.svg') 
-            : require('../assets/android.png')
+            : require('../assets/android2.png')
           }
           style={styles.iconImage}
           resizeMode="contain"
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconImage: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
   },
 });
