@@ -2,92 +2,30 @@ import { EmailDocument } from '../types';
 import { supabase } from './supabase';
 import { migrateDocument } from './documentMigration';
 
-// Import bundled documents (as fallback templates)
-import simpleLayout from '../assets/documents/simple-layout.js';
-import twoColumn from '../assets/documents/two-column.js';
-import complexLayout from '../assets/documents/complex-layout.js';
-import techNewsletter from '../assets/documents/tech-newsletter.js';
-import ecommerceNewsletter from '../assets/documents/e-commerce-newsletter.js';
 
 class DocumentStorageService {
-  private bundledDocuments: EmailDocument[] = [
-    techNewsletter as EmailDocument,
-    ecommerceNewsletter as EmailDocument,
-    simpleLayout as EmailDocument,
-    twoColumn as EmailDocument,
-    complexLayout as EmailDocument,
-  ];
 
   async initialize(): Promise<void> {
     try {
       console.log('🚀 Initializing Supabase document storage...');
       
-      // Check if any documents exist in Supabase
-      const { data: existingDocs, error } = await supabase
+      // Test Supabase connection
+      const { error } = await supabase
         .from('documents')
         .select('id')
         .limit(1);
 
       if (error) {
-        console.warn('⚠️ Supabase not available, using bundled documents:', error.message);
+        console.warn('⚠️ Supabase connection error:', error.message);
         return;
       }
 
-      // If no documents exist, seed with bundled documents
-      if (!existingDocs || existingDocs.length === 0) {
-        console.log('📚 Seeding Supabase with bundled documents...');
-        await this.seedTemplates();
-        console.log('✅ Seeded Supabase with', this.bundledDocuments.length, 'documents');
-      } else {
-        console.log('✅ Supabase already has documents, checking for new templates...');
-        await this.addMissingTemplates();
-      }
+      console.log('✅ Supabase connection established');
     } catch (error) {
-      console.warn('⚠️ Failed to initialize Supabase, using bundled documents:', error);
+      console.warn('⚠️ Failed to initialize Supabase:', error);
     }
   }
 
-  async seedTemplates(): Promise<void> {
-    for (const doc of this.bundledDocuments) {
-      const migratedDoc = migrateDocument(doc);
-      await this.saveDocument(migratedDoc);
-    }
-  }
-
-  async addMissingTemplates(): Promise<void> {
-    try {
-      console.log('🔍 Checking for missing newsletter templates...');
-      
-      // Check which template IDs are missing
-      const templateIds = this.bundledDocuments.map(doc => doc.id);
-      
-      const { data: existingDocs, error } = await supabase
-        .from('documents')
-        .select('id')
-        .in('id', templateIds);
-
-      if (error) {
-        console.warn('⚠️ Error checking existing templates:', error.message);
-        return;
-      }
-
-      const existingIds = new Set(existingDocs?.map(doc => doc.id) || []);
-      const missingTemplates = this.bundledDocuments.filter(doc => !existingIds.has(doc.id));
-
-      if (missingTemplates.length > 0) {
-        console.log('📚 Adding', missingTemplates.length, 'new templates to Supabase...');
-        for (const template of missingTemplates) {
-          const migratedDoc = migrateDocument(template);
-          await this.saveDocument(migratedDoc);
-          console.log('✅ Added template:', template.name);
-        }
-      } else {
-        console.log('✅ All templates already exist in Supabase');
-      }
-    } catch (error) {
-      console.warn('⚠️ Failed to check/add missing templates:', error);
-    }
-  }
 
   async getAllDocuments(): Promise<EmailDocument[]> {
     try {
@@ -100,12 +38,12 @@ class DocumentStorageService {
 
       if (error) {
         console.warn('⚠️ Error fetching from Supabase:', error.message);
-        return this.bundledDocuments.map(doc => migrateDocument(doc));
+        return [];
       }
 
       if (!data || data.length === 0) {
-        console.log('📄 No documents in Supabase, returning bundled documents');
-        return this.bundledDocuments.map(doc => migrateDocument(doc));
+        console.log('📄 No documents found in Supabase');
+        return [];
       }
 
       // Convert Supabase format to EmailDocument format and migrate
@@ -131,7 +69,7 @@ class DocumentStorageService {
       return documents;
     } catch (error) {
       console.warn('⚠️ Failed to fetch documents from Supabase:', error);
-      return this.bundledDocuments.map(doc => migrateDocument(doc));
+      return [];
     }
   }
 
@@ -146,8 +84,8 @@ class DocumentStorageService {
         .single();
 
       if (error || !data) {
-        console.warn('⚠️ Document not found in Supabase, checking bundled:', error?.message);
-        return this.bundledDocuments.find(doc => doc.id === id) || null;
+        console.warn('⚠️ Document not found in Supabase:', error?.message);
+        return null;
       }
 
       // Migrate document from database format to current format
@@ -172,8 +110,7 @@ class DocumentStorageService {
       return document;
     } catch (error) {
       console.warn('⚠️ Failed to fetch document from Supabase:', error);
-      const bundledDoc = this.bundledDocuments.find(doc => doc.id === id);
-      return bundledDoc ? migrateDocument(bundledDoc) : null;
+      return null;
     }
   }
 

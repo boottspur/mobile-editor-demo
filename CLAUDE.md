@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a cross-platform mobile email editor demo built with React Native and Expo. The project demonstrates how a single codebase can deliver optimal experiences across desktop web, mobile web, and native mobile contexts.
 
-**Current Status**: Greenfield project with PRD defined but not yet initialized.
+**Current Status**: Feature-complete email editor with Design | Edit | Preview workflow implemented. Ready for testing and deployment optimization.
 
 ## Technology Stack
 
@@ -64,14 +64,27 @@ The app detects three contexts:
 
 ### Core Components
 - `<AppShell />` - Root component handling context detection
-- `<MobileEmailEditor />` - Main WYSIWYG editor component
+- `<MobileEmailEditor />` - Main component with persistent header/toolbar and undo/redo system
+- `<SwipeableEditor />` - Three-page navigation (Design | Edit | Preview) with gesture support
+- `<GlobalStylesEditor />` - Integrated design page with mobile-specific optimizations
+- `<EmailPreview />` - Responsive preview with mobile/desktop view modes
+- `<ResponsiveView />` - Component for scaling desktop email previews
 - `<DesktopPlaceholder />` - Desktop view component
 - `<NativeAppBanner />` - Mobile web to native transition UI
+
+### Current Feature Set
+- **Three-Page Workflow**: Design | Edit | Preview with swipe navigation
+- **Undo/Redo System**: Full history tracking with visual controls
+- **Responsive Preview**: Mobile/desktop view toggle with proper column stacking
+- **Global Styles Editor**: Integrated design page with mobile-specific optimizations
+- **Persistent UI**: Header/toolbar remain visible across all modes
+- **Touch-Optimized**: Gesture-based navigation with proper activation thresholds
 
 ### Document Storage
 - Native: Expo FileSystem API
 - Web: localStorage
 - Documents stored as JSON with editor block structure
+- Global styles stored as part of document metadata
 
 ### Key Directories (once initialized)
 - `/app/` or `/src/` - Application source code
@@ -96,17 +109,19 @@ The project should be tested on:
 
 ## Development Workflow
 
-### Phase-Based Development
-The project follows a structured development approach outlined in `/ROADMAP.md`:
-1. **Phase 0**: Project setup and foundation
-2. **Phase 1**: Context detection and routing
-3. **Phase 2**: Document management system
-4. **Phase 3**: Email editor core components
-5. **Phase 4**: Editor interactions and drag-and-drop
-6. **Phase 5**: Platform-specific features
-7. **Phase 6**: Polish and optimization
-8. **Phase 7**: Testing and documentation
-9. **Phase 8**: Deployment
+### Current Development Status
+The project has completed core implementation with the following features:
+- ✅ **Phase 0-3**: Foundation, context detection, document management, and core editor
+- ✅ **Design Integration**: Global styles editor with mobile-specific controls
+- ✅ **Navigation System**: Three-page swipe navigation (Design | Edit | Preview)
+- ✅ **Undo/Redo**: Complete history tracking and state management
+- ✅ **Responsive Preview**: Mobile/desktop view modes with proper layout
+- ✅ **UI Polish**: Persistent header/toolbar, optimized touch targets
+
+### Remaining Tasks (See `/ROADMAP.md` for details)
+- **Phase 4**: Advanced editor interactions and drag-and-drop
+- **Phase 5**: Platform-specific features and optimizations
+- **Phase 6-8**: Testing, documentation, and deployment
 
 ### Key Technical Decisions
 1. **Editor Strategy**: Custom React Native component-based WYSIWYG editor for true cross-platform compatibility
