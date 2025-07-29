@@ -8,6 +8,7 @@ import {
   ScrollView,
   Animated,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { BlockType } from '../types';
 
@@ -66,6 +67,7 @@ export const BlockPicker: React.FC<BlockPickerProps> = ({ onSelectType }) => {
   const { height: screenHeight } = Dimensions.get('window');
 
   const togglePicker = () => {
+    console.log('BlockPicker togglePicker called, current state:', isOpen, 'Platform:', Platform.OS);
     const toValue = isOpen ? 0 : 1;
     setIsOpen(!isOpen);
     
@@ -110,18 +112,20 @@ export const BlockPicker: React.FC<BlockPickerProps> = ({ onSelectType }) => {
       {/* Block Picker Modal */}
       <Modal
         visible={isOpen}
-        transparent
-        animationType="slide"
+        transparent={Platform.OS === 'ios'}
+        animationType={Platform.OS === 'ios' ? 'slide' : 'fade'}
         onRequestClose={togglePicker}
+        statusBarTranslucent={Platform.OS === 'android'}
       >
         <TouchableOpacity 
           style={styles.overlay} 
           onPress={togglePicker}
           activeOpacity={1}
         >
-          <View 
+          <TouchableOpacity 
             style={[styles.pickerContainer, { maxHeight: screenHeight * 0.8 }]}
-            onStartShouldSetResponder={() => true}
+            activeOpacity={1}
+            onPress={() => {}}
           >
             <View style={styles.handle} />
             
@@ -172,7 +176,7 @@ export const BlockPicker: React.FC<BlockPickerProps> = ({ onSelectType }) => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </>
@@ -204,14 +208,19 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Platform.OS === 'ios' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'flex-end',
   },
   pickerContainer: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingBottom: 40,
+    paddingBottom: Platform.OS === 'android' ? 60 : 40,
+    elevation: Platform.OS === 'android' ? 16 : 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   handle: {
     width: 40,
